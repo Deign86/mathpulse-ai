@@ -78,3 +78,82 @@ export interface Classroom {
   academicYear: string;
   room: string;
 }
+
+// ============ Admin Panel Types ============
+
+export type UserRole = 'admin' | 'teacher' | 'student';
+export type UserStatus = 'active' | 'inactive' | 'suspended';
+
+export interface SystemUser {
+  id: string;
+  email: string;
+  name: string;
+  avatar: string;
+  role: UserRole;
+  status: UserStatus;
+  department?: string;
+  gradeLevel?: string;
+  classroomId?: string;
+  lastLogin?: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface AuditLogEntry {
+  id: string;
+  userId: string;
+  userName: string;
+  userRole: UserRole;
+  action: string;
+  category: 'auth' | 'user' | 'content' | 'system' | 'data';
+  details: string;
+  ipAddress?: string;
+  timestamp: string;
+  severity: 'info' | 'warning' | 'error' | 'critical';
+}
+
+export interface SystemSettings {
+  siteName: string;
+  siteDescription: string;
+  maintenanceMode: boolean;
+  allowRegistration: boolean;
+  maxStudentsPerClass: number;
+  sessionTimeout: number; // minutes
+  aiTutorEnabled: boolean;
+  riskPredictionEnabled: boolean;
+  autoBackupEnabled: boolean;
+  emailNotificationsEnabled: boolean;
+  defaultLanguage: string;
+  academicYear: string;
+  semester: string;
+}
+
+export interface SystemStats {
+  totalUsers: number;
+  totalStudents: number;
+  totalTeachers: number;
+  totalAdmins: number;
+  totalClassrooms: number;
+  totalModules: number;
+  activeUsers24h: number;
+  chatMessagesToday: number;
+  averageEngagement: number;
+  studentsAtRisk: number;
+  systemUptime: string;
+  lastBackup: string;
+}
+
+export interface ModuleTemplate {
+  id: string;
+  title: string;
+  description: string;
+  type: 'video' | 'quiz' | 'exercise';
+  topic: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  duration: string;
+  status: 'draft' | 'published' | 'archived';
+  createdBy: string;
+  createdAt: string;
+  updatedAt?: string;
+  assignedClassrooms: string[];
+}

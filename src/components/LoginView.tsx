@@ -1,18 +1,66 @@
 import { useState } from 'react';
-import { BrainCircuit } from 'lucide-react';
+import { BrainCircuit, Eye, EyeOff, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { demoCredentials, UserAccount } from '../utils/demoAccounts';
+import { authService, UserProfile } from '../services/firebase';
 
 interface LoginViewProps {
-  onLogin: (role: 'teacher' | 'student') => void;
+  onLogin: (user: UserAccount) => void;
 }
 
 export function LoginView({ onLogin }: LoginViewProps) {
-  const [selectedRole, setSelectedRole] = useState<'teacher' | 'student'>('teacher');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [showDemoCredentials, setShowDemoCredentials] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onLogin(selectedRole);
+    setError('');
+    setIsLoading(true);
+
+    try {
+      // Use Firebase Authentication
+      const result = await authService.signIn(email, password);
+      
+      if (result && result.profile) {
+        // Convert UserProfile to UserAccount format for compatibility
+        const userAccount: UserAccount = {
+          id: result.user.uid,
+          email: result.profile.email,
+          password: '', // Don't store password
+          role: result.profile.role,
+          name: result.profile.name,
+          avatar: result.profile.avatar,
+          department: result.profile.department,
+          gradeLevel: result.profile.gradeLevel,
+          classroomId: result.profile.classroomId,
+          studentId: result.profile.studentId
+        };
+        onLogin(userAccount);
+      } else {
+        setError('User profile not found. Please contact support.');
+      }
+    } catch (error: any) {
+      console.error('Login error:', error);
+      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+        setError('Invalid email or password. Please try again.');
+      } else if (error.code === 'auth/too-many-requests') {
+        setError('Too many failed attempts. Please try again later.');
+      } else {
+        setError('Login failed. Please check your credentials and try again.');
+      }
+    }
+    
+    setIsLoading(false);
+  };
+
+  const fillDemoCredentials = (type: 'admin' | 'teacher' | 'student') => {
+    const creds = demoCredentials[type];
+    setEmail(creds.email);
+    setPassword(creds.password);
+    setError('');
   };
 
   return (
@@ -39,32 +87,14 @@ export function LoginView({ onLogin }: LoginViewProps) {
             "Recommender System for Senior High School Student: An AI-Powered Predictive System for Identifying Students at Risk in Math Subjects"
           </p>
         </div>
-        
-        {/* Role Switcher */}
-        <div className="flex gap-2 mb-6 bg-slate-100 p-1 rounded-lg">
-          <button
-            type="button"
-            onClick={() => setSelectedRole('teacher')}
-            className={`flex-1 py-2 px-4 rounded-md transition-all ${
-              selectedRole === 'teacher'
-                ? 'bg-white shadow-md text-brand-900'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            Teacher
-          </button>
-          <button
-            type="button"
-            onClick={() => setSelectedRole('student')}
-            className={`flex-1 py-2 px-4 rounded-md transition-all ${
-              selectedRole === 'student'
-                ? 'bg-white shadow-md text-brand-900'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            Student
-          </button>
-        </div>
+
+        {/* Error Message */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4 flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
+            <p className="text-sm text-red-600">{error}</p>
+          </div>
+        )}
         
         {/* Login Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -80,6 +110,7 @@ export function LoginView({ onLogin }: LoginViewProps) {
               placeholder="your.email@school.edu"
               className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
               required
+              disabled={isLoading}
             />
           </div>
           
@@ -87,24 +118,101 @@ export function LoginView({ onLogin }: LoginViewProps) {
             <label htmlFor="password" className="block text-slate-700 mb-2">
               Password
             </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
-              required
-            />
+            <div className="relative">
+              <input
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full px-4 py-3 pr-12 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                required
+                disabled={isLoading}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+              >
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
+            </div>
           </div>
           
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-brand-500 to-brand-600 text-white py-4 rounded-lg hover:from-brand-600 hover:to-brand-700 transition-all shadow-lg hover:shadow-xl mt-6"
+            disabled={isLoading}
+            className="w-full bg-gradient-to-r from-brand-500 to-brand-600 text-white py-4 rounded-lg hover:from-brand-600 hover:to-brand-700 transition-all shadow-lg hover:shadow-xl mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Enter System
+            {isLoading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
+
+        {/* Demo Credentials Section */}
+        <div className="mt-6 border-t border-slate-200 pt-4">
+          <button
+            type="button"
+            onClick={() => setShowDemoCredentials(!showDemoCredentials)}
+            className="w-full flex items-center justify-between text-slate-600 hover:text-slate-800 transition-colors"
+          >
+            <span className="text-sm font-medium">Demo Credentials (For Testing)</span>
+            {showDemoCredentials ? (
+              <ChevronUp className="w-4 h-4" />
+            ) : (
+              <ChevronDown className="w-4 h-4" />
+            )}
+          </button>
+          
+          {showDemoCredentials && (
+            <div className="mt-3 space-y-2">
+              <button
+                type="button"
+                onClick={() => fillDemoCredentials('admin')}
+                className="w-full p-3 text-left bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-lg transition-colors"
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-purple-800">Administrator</p>
+                    <p className="text-xs text-purple-600">{demoCredentials.admin.email}</p>
+                  </div>
+                  <span className="text-xs bg-purple-200 text-purple-800 px-2 py-1 rounded">Admin</span>
+                </div>
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => fillDemoCredentials('teacher')}
+                className="w-full p-3 text-left bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg transition-colors"
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-blue-800">Teacher Account</p>
+                    <p className="text-xs text-blue-600">{demoCredentials.teacher.email}</p>
+                  </div>
+                  <span className="text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded">Teacher</span>
+                </div>
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => fillDemoCredentials('student')}
+                className="w-full p-3 text-left bg-green-50 hover:bg-green-100 border border-green-200 rounded-lg transition-colors"
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-green-800">Student Account</p>
+                    <p className="text-xs text-green-600">{demoCredentials.student.email}</p>
+                  </div>
+                  <span className="text-xs bg-green-200 text-green-800 px-2 py-1 rounded">Student</span>
+                </div>
+              </button>
+              
+              <p className="text-xs text-slate-500 text-center mt-2">
+                Click any option above to auto-fill credentials
+              </p>
+            </div>
+          )}
+        </div>
         
         <p className="text-center text-slate-500 mt-6 text-sm">
           Powered by Advanced Machine Learning

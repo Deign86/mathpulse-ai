@@ -1,1 +1,43 @@
+# Dependencies
 node_modules
+backend/venv
+__pycache__
+*.pyc
+
+# Environment files (contain API keys and secrets)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+backend/.env
+*.env
+
+# Firebase
+firebase-debug.log
+firebase-debug.*.log
+.firebase
+firebaseServiceAccount.json
+*-service-account.json
+*.pem
+
+# Build outputs
+dist
+build
+*.log
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+.DS_Store
+
+# Test coverage
+coverage
+.nyc_output
+
+# Misc
+*.local
+.cache
+.vercel

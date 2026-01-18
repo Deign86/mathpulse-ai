@@ -1,0 +1,52 @@
+# MathPulse AI - Docker Compose Development Override
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+# This enables hot-reload and development features
+
+version: '3.8'
+
+services:
+  # ============ Frontend Dev Service ============
+  frontend-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: mathpulse-frontend-dev
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:8000
+      - NODE_ENV=development
+    volumes:
+      # Mount source code for hot-reload
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      - backend-dev
+    networks:
+      - mathpulse-dev-network
+    stdin_open: true
+    tty: true
+
+  # ============ Backend Dev Service ============
+  backend-dev:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: mathpulse-backend-dev
+    ports:
+      - "8000:7860"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - HF_TOKEN=${HF_TOKEN:-}
+      - DEBUG=true
+    volumes:
+      # Mount source code for hot-reload
+      - ./backend:/app
+    networks:
+      - mathpulse-dev-network
+    # Override command for development with auto-reload
+    command: uvicorn main:app --host 0.0.0.0 --port 7860 --reload
+
+networks:
+  mathpulse-dev-network:
+    driver: bridge
