@@ -6,7 +6,7 @@ interface ProfileEditModalProps {
   onClose: () => void;
   currentAvatar: string;
   name: string;
-  role: 'teacher' | 'student';
+  role: 'admin' | 'teacher' | 'student';
   email?: string;
   onSave: (newAvatar: string, newName: string) => void;
 }

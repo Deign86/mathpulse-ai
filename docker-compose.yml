@@ -1,0 +1,68 @@
+# MathPulse AI - Docker Compose Configuration
+# Run: docker-compose up --build
+# Development: docker-compose up -d
+
+services:
+  # ============ Frontend Service ============
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: http://localhost:8000
+        # Firebase config - set these in .env file or pass as build args
+        # VITE_FIREBASE_API_KEY: ${VITE_FIREBASE_API_KEY}
+        # VITE_FIREBASE_AUTH_DOMAIN: ${VITE_FIREBASE_AUTH_DOMAIN}
+        # VITE_FIREBASE_PROJECT_ID: ${VITE_FIREBASE_PROJECT_ID}
+    container_name: mathpulse-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - mathpulse-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # ============ Backend Service ============
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: mathpulse-backend
+    ports:
+      - "8000:7860"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - HF_TOKEN=${HF_TOKEN:-}
+      # Add other environment variables as needed
+    volumes:
+      # Mount for development hot-reload (optional)
+      # - ./backend:/app
+      # Persist uploaded files
+      - backend-uploads:/app/uploads
+    networks:
+      - mathpulse-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7860/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+# ============ Development Override ============
+# Use: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+networks:
+  mathpulse-network:
+    driver: bridge
+
+volumes:
+  backend-uploads:
+    driver: local

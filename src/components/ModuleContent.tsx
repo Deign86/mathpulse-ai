@@ -1,6 +1,15 @@
-import { useState } from 'react';
-import { Play, Pause, Volume2, VolumeX, Maximize, CheckCircle, XCircle, ArrowRight, ArrowLeft, Award, Star } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Play, Pause, Volume2, VolumeX, Maximize, CheckCircle, XCircle, ArrowRight, ArrowLeft, Award, Star, Loader2 } from 'lucide-react';
 import { Module } from '../types';
+import { apiService } from '../services/api';
+
+interface QuizQuestion {
+  id: number;
+  question: string;
+  options: string[];
+  correct: string;
+  explanation?: string;
+}
 
 interface ModuleContentProps {
   module: Module;
@@ -16,34 +25,61 @@ export function ModuleContent({ module, onComplete, onBack }: ModuleContentProps
   const [quizSubmitted, setQuizSubmitted] = useState(false);
   const [exerciseAnswers, setExerciseAnswers] = useState<Record<number, string>>({});
   const [exerciseSubmitted, setExerciseSubmitted] = useState(false);
+  
+  // Dynamic quiz questions state
+  const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([]);
+  const [isLoadingQuiz, setIsLoadingQuiz] = useState(false);
+  const [quizError, setQuizError] = useState<string | null>(null);
 
-  // Mock quiz questions
-  const quizQuestions = [
-    {
-      id: 1,
-      question: "What is the derivative of f(x) = x²?",
-      options: ["x", "2x", "x²", "2"],
-      correct: "2x"
-    },
-    {
-      id: 2,
-      question: "What is the power rule for derivatives?",
-      options: ["d/dx[xⁿ] = nxⁿ⁻¹", "d/dx[xⁿ] = xⁿ⁺¹", "d/dx[xⁿ] = nxⁿ", "d/dx[xⁿ] = xⁿ"],
-      correct: "d/dx[xⁿ] = nxⁿ⁻¹"
-    },
-    {
-      id: 3,
-      question: "What is the derivative of f(x) = 5x³ + 2x?",
-      options: ["15x² + 2", "5x² + 2", "15x³ + 2x", "5x⁴ + x²"],
-      correct: "15x² + 2"
-    },
-    {
-      id: 4,
-      question: "The derivative represents the _____ of change.",
-      options: ["speed", "rate", "average", "total"],
-      correct: "rate"
+  // Extract topic from module title for quiz generation
+  const extractTopic = (title: string): string => {
+    // Look for common math topics in the title
+    const topicKeywords = ['derivatives', 'integrals', 'quadratic', 'trigonometry', 'algebra', 'calculus', 'statistics', 'probability', 'logarithm', 'geometry'];
+    const titleLower = title.toLowerCase();
+    
+    for (const keyword of topicKeywords) {
+      if (titleLower.includes(keyword)) {
+        return keyword;
+      }
     }
-  ];
+    
+    // Default to derivatives for calculus-related content
+    if (titleLower.includes('chain rule') || titleLower.includes('differentiation')) {
+      return 'derivatives';
+    }
+    
+    return 'derivatives'; // default topic
+  };
+
+  // Load quiz questions from API
+  useEffect(() => {
+    const loadQuizQuestions = async () => {
+      if (module.type !== 'quiz') return;
+      
+      setIsLoadingQuiz(true);
+      setQuizError(null);
+      
+      try {
+        const topic = extractTopic(module.title);
+        const result = await apiService.generateQuizQuestions(topic, 'intermediate', 4);
+        setQuizQuestions(result.questions);
+      } catch (error) {
+        console.error('Error loading quiz questions:', error);
+        setQuizError('Failed to load quiz questions. Using default questions.');
+        // Fallback questions in case API fails completely
+        setQuizQuestions([
+          { id: 1, question: "What is the derivative of f(x) = x²?", options: ["x", "2x", "x²", "2"], correct: "2x", explanation: "Using the power rule: d/dx[x²] = 2x" },
+          { id: 2, question: "What is the power rule for derivatives?", options: ["d/dx[xⁿ] = nxⁿ⁻¹", "d/dx[xⁿ] = xⁿ⁺¹", "d/dx[xⁿ] = nxⁿ", "d/dx[xⁿ] = xⁿ"], correct: "d/dx[xⁿ] = nxⁿ⁻¹", explanation: "The power rule is fundamental for polynomial derivatives" },
+          { id: 3, question: "What is the derivative of f(x) = 5x³ + 2x?", options: ["15x² + 2", "5x² + 2", "15x³ + 2x", "5x⁴ + x²"], correct: "15x² + 2", explanation: "Apply the power rule to each term separately" },
+          { id: 4, question: "The derivative represents the _____ of change.", options: ["speed", "rate", "average", "total"], correct: "rate", explanation: "The derivative gives the instantaneous rate of change" }
+        ]);
+      } finally {
+        setIsLoadingQuiz(false);
+      }
+    };
+    
+    loadQuizQuestions();
+  }, [module.id, module.type, module.title]);
 
   // Mock exercise problems
   const exerciseProblems = [
@@ -110,6 +146,13 @@ export function ModuleContent({ module, onComplete, onBack }: ModuleContentProps
 
   // Video Player Content
   if (module.type === 'video') {
+    // Extract video URL from module data or use a default educational video
+    const videoUrl = (module as any).videoUrl || 'https://www.youtube.com/embed/WUvTyaaNkzM';
+    const isYouTube = videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be');
+    const embedUrl = isYouTube 
+      ? videoUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/')
+      : videoUrl;
+
     return (
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
         {/* Header */}
@@ -127,61 +170,28 @@ export function ModuleContent({ module, onComplete, onBack }: ModuleContentProps
 
         {/* Video Player */}
         <div className="relative bg-slate-900 aspect-video">
-          {/* Placeholder Video Screen */}
-          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-slate-800 to-slate-900">
-            <div className="text-center">
-              <div className="bg-white/10 backdrop-blur-sm p-8 rounded-full mb-4 mx-auto w-32 h-32 flex items-center justify-center">
-                {isPlaying ? (
-                  <Pause className="w-16 h-16 text-white" />
-                ) : (
-                  <Play className="w-16 h-16 text-white ml-2" />
-                )}
-              </div>
-              <p className="text-white/75">Video Player Placeholder</p>
-            </div>
-          </div>
-
-          {/* Video Controls */}
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
-            {/* Progress Bar */}
-            <div className="mb-3">
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={videoProgress}
-                onChange={(e) => setVideoProgress(Number(e.target.value))}
-                className="w-full h-1 bg-white/30 rounded-lg appearance-none cursor-pointer"
-                style={{
-                  background: `linear-gradient(to right, #a855f7 0%, #a855f7 ${videoProgress}%, rgba(255,255,255,0.3) ${videoProgress}%, rgba(255,255,255,0.3) 100%)`
-                }}
-              />
-            </div>
-
-            {/* Control Buttons */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => setIsPlaying(!isPlaying)}
-                  className="text-white hover:text-purple-300 transition-colors"
-                >
-                  {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
-                </button>
-                <button
-                  onClick={() => setIsMuted(!isMuted)}
-                  className="text-white hover:text-purple-300 transition-colors"
-                >
-                  {isMuted ? <VolumeX className="w-6 h-6" /> : <Volume2 className="w-6 h-6" />}
-                </button>
-                <span className="text-white text-sm">
-                  {Math.floor(videoProgress * 0.12)}:{String(Math.floor((videoProgress * 0.12 * 60) % 60)).padStart(2, '0')} / 12:00
-                </span>
-              </div>
-              <button className="text-white hover:text-purple-300 transition-colors">
-                <Maximize className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
+          {isYouTube ? (
+            <iframe
+              src={embedUrl}
+              className="absolute inset-0 w-full h-full"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              title={module.title}
+            />
+          ) : (
+            <video
+              src={videoUrl}
+              className="absolute inset-0 w-full h-full object-contain bg-black"
+              controls
+              onTimeUpdate={(e) => {
+                const video = e.target as HTMLVideoElement;
+                setVideoProgress((video.currentTime / video.duration) * 100);
+              }}
+              onEnded={() => setVideoProgress(100)}
+            >
+              Your browser does not support the video tag.
+            </video>
+          )}
         </div>
 
         {/* Video Info */}
@@ -247,8 +257,20 @@ export function ModuleContent({ module, onComplete, onBack }: ModuleContentProps
 
         {/* Quiz Content */}
         <div className="p-6 space-y-6">
-          {!quizSubmitted ? (
+          {isLoadingQuiz ? (
+            <div className="flex flex-col items-center justify-center py-12">
+              <Loader2 className="w-12 h-12 text-green-500 animate-spin mb-4" />
+              <p className="text-slate-600">Loading quiz questions...</p>
+              <p className="text-sm text-slate-400 mt-1">Generating personalized questions for you</p>
+            </div>
+          ) : !quizSubmitted ? (
             <>
+              {quizError && (
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-amber-800 text-sm">
+                  {quizError}
+                </div>
+              )}
+              
               <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                 <p className="text-green-900">
                   <strong>Instructions:</strong> Answer all questions to the best of your ability. 
@@ -325,7 +347,7 @@ export function ModuleContent({ module, onComplete, onBack }: ModuleContentProps
                 </p>
               </div>
 
-              {/* Answer Review */}
+              {/* Answer Review with Explanations */}
               <div>
                 <h4 className="text-slate-900 mb-4">Answer Review</h4>
                 <div className="space-y-4">
@@ -357,6 +379,11 @@ export function ModuleContent({ module, onComplete, onBack }: ModuleContentProps
                           {!isCorrect && (
                             <p className="text-green-700">
                               Correct answer: <strong>{question.correct}</strong>
+                            </p>
+                          )}
+                          {question.explanation && (
+                            <p className="text-slate-600 mt-2 p-2 bg-white/50 rounded border border-slate-200">
+                              💡 <strong>Explanation:</strong> {question.explanation}
                             </p>
                           )}
                         </div>

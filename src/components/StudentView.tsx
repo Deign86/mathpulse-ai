@@ -1,16 +1,31 @@
-import { useState } from 'react';
-import { BrainCircuit, FileVideo, FileQuestion, FileText, Send, User, CheckCircle, Clock, LogOut, Star, Trophy, MessageSquare, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { BrainCircuit, FileVideo, FileQuestion, FileText, Send, User, CheckCircle, Clock, LogOut, Star, Trophy, MessageSquare, X, ChevronDown, ChevronUp, Loader2, Bell } from 'lucide-react';
 import { mockModules, mockChatMessages } from '../utils/mockData';
 import { Module, ChatMessage } from '../types';
+import { apiService } from '../services/api';
+import { 
+  chatService, 
+  progressService, 
+  analyticsService,
+  studentProgressService,
+  achievementService,
+  ACHIEVEMENTS,
+  StudentProgressData,
+  activityService,
+  announcementService,
+  Announcement
+} from '../services/firebase';
+import { UserAccount } from '../utils/demoAccounts';
 import { ProfileEditModal } from './ProfileEditModal';
 import { RewardSystem } from './RewardSystem';
 import { ModuleContent } from './ModuleContent';
 
 interface StudentViewProps {
   onLogout: () => void;
+  currentUser: UserAccount;
 }
 
-export function StudentView({ onLogout }: StudentViewProps) {
+export function StudentView({ onLogout, currentUser }: StudentViewProps) {
   const [selectedModule, setSelectedModule] = useState<Module | null>(null);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>(mockChatMessages);
   const [chatInput, setChatInput] = useState('');
@@ -18,14 +33,104 @@ export function StudentView({ onLogout }: StudentViewProps) {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isRewardsOpen, setIsRewardsOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
-  const [studentAvatar, setStudentAvatar] = useState('https://api.dicebear.com/7.x/avataaars/svg?seed=Alex');
-  const [studentName, setStudentName] = useState('Alex Johnson');
+  const [isChatLoading, setIsChatLoading] = useState(false);
+  const [studentAvatar, setStudentAvatar] = useState(currentUser.avatar);
+  const [studentName, setStudentName] = useState(currentUser.name);
   const [viewingModuleContent, setViewingModuleContent] = useState(false);
   
-  // XP and Rewards Data
-  const [xp, setXp] = useState(850);
-  const [level, setLevel] = useState(4);
-  const [streak, setStreak] = useState(7);
+  // Use Firebase UID for chat history (consistent across sessions)
+  // Use studentId for academic data (links to student records)
+  const chatUserId = currentUser.id; // Firebase UID
+  const academicStudentId = currentUser.studentId || currentUser.id;
+  
+  // XP and Rewards Data (loaded from Firebase)
+  const [xp, setXp] = useState(0);
+  const [level, setLevel] = useState(1);
+  const [streak, setStreak] = useState(0);
+  const [progressData, setProgressData] = useState<StudentProgressData | null>(null);
+  const [unlockedAchievementIds, setUnlockedAchievementIds] = useState<string[]>([]);
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [showAnnouncements, setShowAnnouncements] = useState(false);
+  const [newAchievementToast, setNewAchievementToast] = useState<string | null>(null);
+
+  // Load chat history from Firebase on mount
+  useEffect(() => {
+    const loadChatHistory = async () => {
+      try {
+        console.log('Loading chat history for user:', chatUserId);
+        const history = await chatService.getHistory(chatUserId);
+        console.log('Chat history loaded:', history.length, 'messages');
+        if (history.length > 0) {
+          setChatMessages(history);
+        }
+        // Log session start for analytics
+        analyticsService.logEvent(chatUserId, 'session_start', { timestamp: new Date().toISOString() });
+      } catch (error) {
+        console.warn('Could not load chat history from Firebase:', error);
+      }
+    };
+    loadChatHistory();
+  }, [chatUserId]);
+
+  // Load progress data and achievements from Firebase
+  useEffect(() => {
+    const loadProgressAndAchievements = async () => {
+      try {
+        // Get or initialize progress
+        let progress = await studentProgressService.getProgress(academicStudentId);
+        if (!progress) {
+          progress = await studentProgressService.initializeProgress(academicStudentId);
+        }
+        
+        // Update streak on login
+        const { streak: newStreak } = await studentProgressService.updateStreak(academicStudentId);
+        progress.streak = newStreak;
+        
+        setProgressData(progress);
+        setXp(progress.xp);
+        setLevel(progress.level);
+        setStreak(progress.streak);
+        
+        // Load unlocked achievements
+        const unlockedIds = await achievementService.getUnlockedAchievements(academicStudentId);
+        setUnlockedAchievementIds(unlockedIds);
+        
+        // Check for new achievements
+        const newlyUnlocked = await achievementService.checkAndUnlockAchievements(academicStudentId, progress);
+        if (newlyUnlocked.length > 0) {
+          setUnlockedAchievementIds(prev => [...prev, ...newlyUnlocked]);
+          // Show toast for first new achievement
+          const achievement = ACHIEVEMENTS.find(a => a.id === newlyUnlocked[0]);
+          if (achievement) {
+            setNewAchievementToast(achievement.title);
+            setTimeout(() => setNewAchievementToast(null), 5000);
+          }
+        }
+        
+        console.log('Progress loaded:', progress);
+      } catch (error) {
+        console.error('Error loading progress:', error);
+      }
+    };
+    
+    loadProgressAndAchievements();
+  }, [academicStudentId]);
+
+  // Load announcements
+  useEffect(() => {
+    const loadAnnouncements = async () => {
+      try {
+        const studentAnnouncements = await announcementService.getForStudent(
+          academicStudentId, 
+          currentUser.classroomId
+        );
+        setAnnouncements(studentAnnouncements);
+      } catch (error) {
+        console.error('Error loading announcements:', error);
+      }
+    };
+    loadAnnouncements();
+  }, [academicStudentId, currentUser.classroomId]);
 
   const handleProfileSave = (newAvatar: string, newName: string) => {
     setStudentAvatar(newAvatar);
@@ -37,13 +142,64 @@ export function StudentView({ onLogout }: StudentViewProps) {
     setViewingModuleContent(true);
   };
 
-  const handleModuleComplete = () => {
+  const handleModuleComplete = async () => {
     // Award XP based on module type
     const xpReward = selectedModule?.type === 'video' ? 50 : 
                      selectedModule?.type === 'quiz' ? 75 : 100;
-    setXp(prev => prev + xpReward);
     
-    // Mark module as complete (in real app, this would update backend)
+    // Record completion in Firebase with XP
+    if (selectedModule) {
+      try {
+        // Add XP and update level
+        const { newXP, newLevel, leveledUp } = await studentProgressService.addXP(academicStudentId, xpReward);
+        setXp(newXP);
+        setLevel(newLevel);
+        
+        if (leveledUp) {
+          setNewAchievementToast(`Level Up! You're now Level ${newLevel}!`);
+          setTimeout(() => setNewAchievementToast(null), 5000);
+        }
+        
+        // Record module completion stats
+        await studentProgressService.recordModuleCompletion(academicStudentId, selectedModule.type);
+        
+        // Record in learning progress
+        await progressService.recordCompletion(academicStudentId, selectedModule.id);
+        
+        // Log activity for real-time dashboard
+        await activityService.logActivity({
+          studentName: currentUser.name,
+          action: `Completed ${selectedModule.type}: ${selectedModule.title}`,
+          timestamp: new Date().toLocaleTimeString(),
+          classroomId: currentUser.classroomId
+        });
+        
+        // Log analytics
+        analyticsService.logEvent(academicStudentId, 'module_complete', { 
+          moduleId: selectedModule.id, 
+          type: selectedModule.type,
+          xpAwarded: xpReward 
+        });
+        
+        // Check for new achievements
+        const progress = await studentProgressService.getProgress(academicStudentId);
+        if (progress) {
+          const newlyUnlocked = await achievementService.checkAndUnlockAchievements(academicStudentId, progress);
+          if (newlyUnlocked.length > 0) {
+            setUnlockedAchievementIds(prev => [...prev, ...newlyUnlocked]);
+            const achievement = ACHIEVEMENTS.find(a => a.id === newlyUnlocked[0]);
+            if (achievement) {
+              setNewAchievementToast(`🏆 Achievement Unlocked: ${achievement.title}`);
+              setTimeout(() => setNewAchievementToast(null), 5000);
+            }
+          }
+          setProgressData(progress);
+        }
+      } catch (error) {
+        console.warn('Could not record module completion:', error);
+      }
+    }
+    
     setViewingModuleContent(false);
     setSelectedModule(null);
   };
@@ -52,91 +208,56 @@ export function StudentView({ onLogout }: StudentViewProps) {
     setViewingModuleContent(false);
   };
 
-  const achievements = [
-    {
-      id: '1',
-      title: 'First Steps',
-      description: 'Complete your first video lesson',
-      icon: 'star',
-      unlocked: true
-    },
-    {
-      id: '2',
-      title: 'Quiz Master',
-      description: 'Score 100% on any quiz',
-      icon: 'trophy',
-      unlocked: true
-    },
-    {
-      id: '3',
-      title: 'Week Warrior',
-      description: 'Maintain a 7-day login streak',
-      icon: 'flame',
-      unlocked: true
-    },
-    {
-      id: '4',
-      title: 'Practice Makes Perfect',
-      description: 'Complete 10 exercise sets',
-      icon: 'target',
-      unlocked: false,
-      progress: 6,
-      maxProgress: 10
-    },
-    {
-      id: '5',
-      title: 'Knowledge Seeker',
-      description: 'Watch 20 video lessons',
-      icon: 'award',
-      unlocked: false,
-      progress: 12,
-      maxProgress: 20
-    },
-    {
-      id: '6',
-      title: 'Speed Learner',
-      description: 'Complete 3 modules in one day',
-      icon: 'zap',
-      unlocked: false,
-      progress: 1,
-      maxProgress: 3
-    },
-    {
-      id: '7',
-      title: 'Crown Achiever',
-      description: 'Reach Level 10',
-      icon: 'crown',
-      unlocked: false,
-      progress: 4,
-      maxProgress: 10
-    },
-    {
-      id: '8',
-      title: 'Medal of Honor',
-      description: 'Help 5 classmates through AI tutor',
-      icon: 'medal',
-      unlocked: false,
-      progress: 2,
-      maxProgress: 5
-    }
-  ];
+  // Build achievements list from Firebase data
+  const achievements = progressData 
+    ? achievementService.getAchievementsWithStatus(unlockedAchievementIds, progressData)
+    : ACHIEVEMENTS.map(a => ({ ...a, unlocked: false }));
 
-  const handleSendMessage = (e: React.FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!chatInput.trim()) return;
+    if (!chatInput.trim() || isChatLoading) return;
 
+    const userMessage = chatInput.trim();
     const newMessage: ChatMessage = {
       id: Date.now().toString(),
       sender: 'user',
-      message: chatInput,
+      message: userMessage,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
 
-    setChatMessages([...chatMessages, newMessage]);
+    const updatedMessages = [...chatMessages, newMessage];
+    setChatMessages(updatedMessages);
     setChatInput('');
+    setIsChatLoading(true);
 
-    // Simulate AI response
-    setTimeout(() => {
+    // Save user message to Firebase using chatUserId
+    try {
+      await chatService.saveMessage(chatUserId, newMessage);
+    } catch (error) {
+      console.warn('Could not save message to Firebase:', error);
+    }
+
+    try {
+      // Call the ML backend API for AI tutor response
+      const response = await apiService.chat(userMessage, updatedMessages);
+      
+      const aiResponse: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        sender: 'ai',
+        message: response.message,
+        timestamp: response.timestamp
+      };
+      setChatMessages(prev => [...prev, aiResponse]);
+      
+      // Save AI response to Firebase
+      try {
+        await chatService.saveMessage(chatUserId, aiResponse);
+      } catch (error) {
+        console.warn('Could not save AI response to Firebase:', error);
+      }
+    } catch (error) {
+      console.error('Chat API error:', error);
+      // Fallback response on error
       const aiResponse: ChatMessage = {
         id: (Date.now() + 1).toString(),
         sender: 'ai',
@@ -144,7 +265,9 @@ export function StudentView({ onLogout }: StudentViewProps) {
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
       setChatMessages(prev => [...prev, aiResponse]);
-    }, 1000);
+    } finally {
+      setIsChatLoading(false);
+    }
   };
 
   const getModuleIcon = (type: Module['type']) => {
@@ -313,13 +436,15 @@ export function StudentView({ onLogout }: StudentViewProps) {
                       value={chatInput}
                       onChange={(e) => setChatInput(e.target.value)}
                       placeholder="Ask about this lesson..."
-                      className="flex-1 px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                      disabled={isChatLoading}
+                      className="flex-1 px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent disabled:bg-slate-100"
                     />
                     <button
                       type="submit"
-                      className="bg-brand-500 text-white px-3 py-2 rounded-lg hover:bg-brand-600 transition-colors"
+                      disabled={isChatLoading}
+                      className="bg-brand-500 text-white px-3 py-2 rounded-lg hover:bg-brand-600 transition-colors disabled:opacity-50"
                     >
-                      <Send className="w-4 h-4" />
+                      {isChatLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                     </button>
                   </div>
                 </form>
