@@ -13,12 +13,14 @@ import {
   StudentProgressData,
   activityService,
   announcementService,
+  moduleService,
+  ModuleContent,
   Announcement
 } from '../services/firebase';
 import { UserAccount } from '../utils/demoAccounts';
 import { ProfileEditModal } from './ProfileEditModal';
 import { RewardSystem } from './RewardSystem';
-import { ModuleContent } from './ModuleContent';
+import { ModuleContent as ModuleContentComponent } from './ModuleContent';
 
 interface StudentViewProps {
   onLogout: () => void;
@@ -52,6 +54,56 @@ export function StudentView({ onLogout, currentUser }: StudentViewProps) {
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [showAnnouncements, setShowAnnouncements] = useState(false);
   const [newAchievementToast, setNewAchievementToast] = useState<string | null>(null);
+  
+  // Modules state (loaded from Firebase with mock fallback)
+  const [modules, setModules] = useState<Module[]>(mockModules);
+  const [isLoadingModules, setIsLoadingModules] = useState(true);
+  const [completedModuleIds, setCompletedModuleIds] = useState<string[]>([]);
+
+  // Load modules from Firebase
+  useEffect(() => {
+    const loadModules = async () => {
+      try {
+        setIsLoadingModules(true);
+        // Try to load from Firebase modules collection
+        const firebaseModules = await moduleService.getByClassroom(currentUser.classroomId || 'class-1');
+        
+        if (firebaseModules.length > 0) {
+          // Convert ModuleContent to Module format
+          const convertedModules: Module[] = firebaseModules.map(m => ({
+            id: m.id,
+            title: m.title,
+            type: m.type,
+            duration: m.duration,
+            completed: completedModuleIds.includes(m.id)
+          }));
+          setModules(convertedModules);
+        } else {
+          // Fall back to mock modules
+          setModules(mockModules);
+        }
+      } catch (error) {
+        console.error('Error loading modules:', error);
+        setModules(mockModules);
+      } finally {
+        setIsLoadingModules(false);
+      }
+    };
+    loadModules();
+  }, [currentUser.classroomId, completedModuleIds]);
+
+  // Load completed modules from progress service
+  useEffect(() => {
+    const loadCompletedModules = async () => {
+      try {
+        const completed = await progressService.getCompletedModules(academicStudentId);
+        setCompletedModuleIds(completed);
+      } catch (error) {
+        console.error('Error loading completed modules:', error);
+      }
+    };
+    loadCompletedModules();
+  }, [academicStudentId]);
 
   // Load chat history from Firebase on mount
   useEffect(() => {
@@ -278,8 +330,9 @@ export function StudentView({ onLogout, currentUser }: StudentViewProps) {
     }
   };
 
-  const progress = 70; // Overall progress percentage
-  const completedModules = mockModules.filter(m => m.completed).length;
+  // Calculate progress based on completed modules
+  const completedModulesCount = modules.filter(m => m.completed || completedModuleIds.includes(m.id)).length;
+  const progress = modules.length > 0 ? Math.round((completedModulesCount / modules.length) * 100) : 0;
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -371,7 +424,7 @@ export function StudentView({ onLogout, currentUser }: StudentViewProps) {
           /* Module Content View - Full Width */
           <>
             <div className="relative">
-              <ModuleContent
+              <ModuleContentComponent
                 module={selectedModule}
                 onComplete={handleModuleComplete}
                 onBack={handleBackToModules}
@@ -491,7 +544,7 @@ export function StudentView({ onLogout, currentUser }: StudentViewProps) {
                   
                   <div>
                     <p className="text-white/90 mb-2">Your Progress</p>
-                    <p className="text-sm text-white/75">{completedModules} of {mockModules.length} modules completed</p>
+                    <p className="text-sm text-white/75">{completedModulesCount} of {modules.length} modules completed</p>
                     <p className="text-sm text-white/75 mt-2">Keep going! You're doing great.</p>
                   </div>
                 </div>
@@ -501,8 +554,9 @@ export function StudentView({ onLogout, currentUser }: StudentViewProps) {
               <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
                 <h3 className="text-slate-900 mb-4">Recommended Learning Modules</h3>
                 <div className="space-y-3">
-                  {mockModules.map((module) => {
+                  {modules.map((module) => {
                     const Icon = getModuleIcon(module.type);
+                    const isCompleted = module.completed || completedModuleIds.includes(module.id);
                     return (
                       <div
                         key={module.id}
@@ -529,7 +583,7 @@ export function StudentView({ onLogout, currentUser }: StudentViewProps) {
                           <div className="flex-1 min-w-0">
                             <div className="flex items-start justify-between gap-2">
                               <p className="text-slate-900">{module.title}</p>
-                              {module.completed && (
+                              {isCompleted && (
                                 <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
                               )}
                             </div>

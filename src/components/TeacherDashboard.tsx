@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { BrainCircuit, LayoutDashboard, BarChart3, Upload, User, Search, Sparkles, Activity, Printer, Megaphone, Trophy, Users, Bell, FileVideo, FileQuestion, FileText, ChevronRight, LogOut, Download, Shield, BookOpen, ChevronDown, Calendar, Edit2, CheckCircle, AlertCircle, Loader2, X, FileSpreadsheet, Send } from 'lucide-react';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Student, RiskLevel, Activity as ActivityType } from '../types';
-import { mockStudents, mockActivities, mockInterventionPlan, mockClassrooms, mockExternalLinks } from '../utils/mockData';
+import { Student, RiskLevel, Activity as ActivityType, InterventionPlan, Classroom } from '../types';
+import { mockStudents, mockActivities, mockClassrooms, mockExternalLinks } from '../utils/mockData';
 import { UserAccount } from '../utils/demoAccounts';
 import { ProfileEditModal } from './ProfileEditModal';
 import { ExportPrintedMaterialsModal } from './ExportPrintedMaterialsModal';
@@ -10,7 +10,7 @@ import { ExternalLinkValidationModal } from './ExternalLinkValidationModal';
 import { ClassroomOverviewModal } from './ClassroomOverviewModal';
 import { EditClassRecordsModal } from './EditClassRecordsModal';
 import { apiService } from '../services/api';
-import { studentService, activityService, announcementService, Announcement } from '../services/firebase';
+import { studentService, activityService, announcementService, classroomService, Announcement } from '../services/firebase';
 import { useToast } from './ui/Toast';
 
 const getRiskColor = (risk: RiskLevel) => {
@@ -38,7 +38,9 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
   const [currentClassroomId, setCurrentClassroomId] = useState('class-1');
   const [externalLinks, setExternalLinks] = useState(mockExternalLinks);
   const [students, setStudents] = useState<Student[]>(mockStudents);
+  const [classrooms, setClassrooms] = useState<Classroom[]>(mockClassrooms);
   const [isLoadingStudents, setIsLoadingStudents] = useState(true);
+  const [isLoadingClassrooms, setIsLoadingClassrooms] = useState(true);
   const [teacherAvatar, setTeacherAvatar] = useState(currentUser.avatar);
   const [teacherName, setTeacherName] = useState(currentUser.name);
   
@@ -79,6 +81,29 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
       }
     };
     loadStudents();
+  }, []);
+
+  // Load classrooms from Firebase on mount
+  useEffect(() => {
+    const loadClassrooms = async () => {
+      try {
+        setIsLoadingClassrooms(true);
+        const firebaseClassrooms = await classroomService.getAll();
+        if (firebaseClassrooms.length > 0) {
+          setClassrooms(firebaseClassrooms);
+        } else {
+          // Fall back to mock data and seed Firebase
+          setClassrooms(mockClassrooms);
+          await classroomService.seedFromMockData(mockClassrooms);
+        }
+      } catch (error) {
+        console.error('Error loading classrooms from Firebase:', error);
+        setClassrooms(mockClassrooms);
+      } finally {
+        setIsLoadingClassrooms(false);
+      }
+    };
+    loadClassrooms();
   }, []);
 
   // Subscribe to real-time activities
@@ -182,6 +207,10 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
     recommendations: Array<{ priority: string; action: string; impact: string }>;
   } | null>(null);
   const [isLoadingInsight, setIsLoadingInsight] = useState(true);
+
+  // Dynamic Intervention Plan state (per-student)
+  const [interventionPlan, setInterventionPlan] = useState<InterventionPlan | null>(null);
+  const [isLoadingInterventionPlan, setIsLoadingInterventionPlan] = useState(false);
 
   const classRecordsInputRef = useRef<HTMLInputElement>(null);
   const courseMaterialsInputRef = useRef<HTMLInputElement>(null);
@@ -393,8 +422,171 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
     }
   };
 
+  // Generate intervention plan when a student is selected
+  const generateInterventionPlan = async (student: Student) => {
+    setIsLoadingInterventionPlan(true);
+    
+    try {
+      // Call the learning path API
+      const learningPath = await apiService.generateLearningPath({
+        studentId: student.id,
+        weakestTopic: student.weakestTopic,
+        avgQuizScore: student.avgQuizScore,
+        engagementScore: student.engagementScore
+      });
+
+      // Generate AI analysis based on student data
+      const analysis = generateAIAnalysis(student);
+
+      // Convert API response to InterventionPlan format
+      const plan: InterventionPlan = {
+        analysis,
+        remedial_path: learningPath.steps.map(step => ({
+          step: step.step,
+          topic: step.topic,
+          activityType: step.type
+        })),
+        strategies: generateStrategies(student)
+      };
+
+      setInterventionPlan(plan);
+    } catch (error) {
+      console.error('Error generating intervention plan:', error);
+      // Use a basic fallback
+      setInterventionPlan({
+        analysis: generateAIAnalysis(student),
+        remedial_path: [
+          { step: 1, topic: `Introduction to ${student.weakestTopic}`, activityType: 'video' },
+          { step: 2, topic: `${student.weakestTopic} Fundamentals Quiz`, activityType: 'quiz' },
+          { step: 3, topic: 'Guided Practice Problems', activityType: 'exercise' },
+          { step: 4, topic: `Advanced ${student.weakestTopic}`, activityType: 'video' },
+          { step: 5, topic: 'Comprehensive Review Quiz', activityType: 'quiz' }
+        ],
+        strategies: generateStrategies(student)
+      });
+    } finally {
+      setIsLoadingInterventionPlan(false);
+    }
+  };
+
+  // Generate AI analysis based on student's performance data
+  const generateAIAnalysis = (student: Student): { core_issue: string; gaps: string[] } => {
+    const topic = student.weakestTopic;
+    const isLowEngagement = student.engagementScore < 60;
+    const isLowQuizScore = student.avgQuizScore < 60;
+    const riskLevel = student.riskLevel;
+
+    // Generate core issue based on student's specific struggles
+    let coreIssue = '';
+    if (riskLevel === RiskLevel.HIGH) {
+      if (isLowEngagement && isLowQuizScore) {
+        coreIssue = `Student shows critical gaps in understanding ${topic} fundamentals, combined with low classroom engagement that may indicate learning barriers.`;
+      } else if (isLowQuizScore) {
+        coreIssue = `Student struggles with the fundamental concepts of ${topic}, despite reasonable engagement levels.`;
+      } else {
+        coreIssue = `Student has disengaged from learning activities despite having some foundational knowledge in ${topic}.`;
+      }
+    } else if (riskLevel === RiskLevel.MEDIUM) {
+      coreIssue = `Student demonstrates inconsistent understanding of ${topic}, with performance varying across different problem types.`;
+    } else {
+      coreIssue = `Student shows solid progress in ${topic} but could benefit from enrichment activities to master advanced concepts.`;
+    }
+
+    // Generate specific gaps based on topic and scores
+    const gaps: string[] = [];
+    
+    if (topic.toLowerCase().includes('derivative') || topic.toLowerCase().includes('calculus')) {
+      if (student.avgQuizScore < 70) gaps.push('Weak foundation in algebraic manipulation');
+      if (student.avgQuizScore < 60) gaps.push('Limited visual understanding of slope concepts');
+      gaps.push('Difficulty applying derivative rules in context');
+    } else if (topic.toLowerCase().includes('quadratic')) {
+      if (student.avgQuizScore < 70) gaps.push('Struggles with factoring techniques');
+      if (student.avgQuizScore < 60) gaps.push('Limited understanding of parabola properties');
+      gaps.push('Difficulty connecting equations to graphs');
+    } else if (topic.toLowerCase().includes('trigonometry') || topic.toLowerCase().includes('trig')) {
+      if (student.avgQuizScore < 70) gaps.push('Incomplete memorization of unit circle values');
+      if (student.avgQuizScore < 60) gaps.push('Confusion with trig identities');
+      gaps.push('Difficulty with real-world applications');
+    } else if (topic.toLowerCase().includes('logarithm')) {
+      if (student.avgQuizScore < 70) gaps.push('Weak understanding of exponential relationships');
+      if (student.avgQuizScore < 60) gaps.push('Struggles with logarithm properties');
+      gaps.push('Difficulty solving logarithmic equations');
+    } else {
+      // Generic gaps based on performance
+      if (student.avgQuizScore < 70) gaps.push(`Gaps in foundational ${topic} concepts`);
+      if (isLowEngagement) gaps.push('Decreased participation in practice activities');
+      gaps.push(`Needs more practice applying ${topic} to problems`);
+    }
+
+    // Add engagement-related gaps
+    if (isLowEngagement) {
+      gaps.push('Low engagement with assigned practice materials');
+    }
+
+    return { core_issue: coreIssue, gaps: gaps.slice(0, 4) };
+  };
+
+  // Generate teaching strategies based on student profile
+  const generateStrategies = (student: Student): InterventionPlan['strategies'] => {
+    const strategies: InterventionPlan['strategies'] = [];
+    
+    if (student.riskLevel === RiskLevel.HIGH) {
+      strategies.push({
+        title: 'One-on-One Session',
+        action: `Schedule focused tutoring on ${student.weakestTopic} fundamentals`,
+        icon: 'users'
+      });
+      strategies.push({
+        title: 'Parent Notification',
+        action: 'Send progress update and recommended home practice activities',
+        icon: 'bell'
+      });
+    }
+    
+    if (student.avgQuizScore < 70) {
+      strategies.push({
+        title: 'Additional Practice',
+        action: 'Assign targeted exercises to reinforce weak areas',
+        icon: 'trophy'
+      });
+    }
+    
+    if (student.engagementScore < 60) {
+      strategies.push({
+        title: 'Engagement Boost',
+        action: 'Incorporate interactive activities and peer learning',
+        icon: 'users'
+      });
+    }
+    
+    strategies.push({
+      title: 'Progress Monitoring',
+      action: 'Set up weekly check-ins to track improvement',
+      icon: 'calendar'
+    });
+
+    // Ensure we always have at least 4 strategies
+    if (strategies.length < 4) {
+      strategies.push({
+        title: 'Printed Materials',
+        action: 'Generate offline worksheets for additional practice',
+        icon: 'users'
+      });
+    }
+
+    return strategies.slice(0, 4);
+  };
+
+  // Load intervention plan when student is selected
+  useEffect(() => {
+    if (selectedStudent) {
+      setInterventionPlan(null);
+      generateInterventionPlan(selectedStudent);
+    }
+  }, [selectedStudent?.id]);
+
   // Filter students by current classroom
-  const currentClassroom = mockClassrooms.find(c => c.id === currentClassroomId);
+  const currentClassroom = classrooms.find(c => c.id === currentClassroomId);
   const classroomStudents = students.filter(s => s.classroomId === currentClassroomId);
   const filteredStudents = classroomStudents.filter(student =>
     student.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -714,71 +906,104 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
               {/* AI Analysis */}
               <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
                 <h3 className="text-slate-900 mb-4">AI Analysis</h3>
-                <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded">
-                  <p className="text-slate-900 mb-3">{mockInterventionPlan.analysis.core_issue}</p>
-                  <div className="space-y-1">
-                    {mockInterventionPlan.analysis.gaps.map((gap, index) => (
-                      <p key={index} className="text-sm text-slate-600">• {gap}</p>
-                    ))}
+                {isLoadingInterventionPlan ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="w-6 h-6 animate-spin text-brand-500 mr-2" />
+                    <span className="text-slate-600">Analyzing student performance...</span>
                   </div>
-                </div>
+                ) : interventionPlan ? (
+                  <div className={`border-l-4 p-4 rounded ${
+                    selectedStudent.riskLevel === RiskLevel.HIGH 
+                      ? 'bg-red-50 border-red-500' 
+                      : selectedStudent.riskLevel === RiskLevel.MEDIUM 
+                        ? 'bg-amber-50 border-amber-500' 
+                        : 'bg-emerald-50 border-emerald-500'
+                  }`}>
+                    <p className="text-slate-900 mb-3">{interventionPlan.analysis.core_issue}</p>
+                    <div className="space-y-1">
+                      {interventionPlan.analysis.gaps.map((gap, index) => (
+                        <p key={index} className="text-sm text-slate-600">• {gap}</p>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-slate-500">Unable to generate analysis. Please try again.</p>
+                )}
               </div>
 
               {/* AI Remedial Path - Timeline Visualization */}
               <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
                 <h3 className="text-slate-900 mb-6">AI-Generated Remedial Path</h3>
-                <div className="relative">
-                  {/* Timeline Line */}
-                  <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-brand-500 to-brand-900"></div>
-                  
-                  <div className="space-y-6">
-                    {mockInterventionPlan.remedial_path.map((step) => {
-                      const Icon = step.activityType === 'video' ? FileVideo : step.activityType === 'quiz' ? FileQuestion : FileText;
-                      return (
-                        <div key={step.step} className="relative flex items-start gap-4 pl-14">
-                          {/* Timeline Node */}
-                          <div className="absolute left-0 w-12 h-12 bg-brand-500 rounded-full flex items-center justify-center text-white shadow-lg">
-                            {step.step}
-                          </div>
-                          
-                          {/* Content Card */}
-                          <div className="flex-1 bg-slate-50 rounded-lg p-4 border-2 border-slate-200 hover:border-brand-500 transition-colors">
-                            <div className="flex items-center gap-3">
-                              <Icon className="w-5 h-5 text-brand-600" />
-                              <div>
-                                <p className="text-slate-900">{step.topic}</p>
-                                <p className="text-xs text-slate-500 mt-1 capitalize">{step.activityType}</p>
+                {isLoadingInterventionPlan ? (
+                  <div className="flex items-center justify-center py-12">
+                    <Loader2 className="w-6 h-6 animate-spin text-brand-500 mr-2" />
+                    <span className="text-slate-600">Generating personalized learning path...</span>
+                  </div>
+                ) : interventionPlan ? (
+                  <div className="relative">
+                    {/* Timeline Line */}
+                    <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-brand-500 to-brand-900"></div>
+                    
+                    <div className="space-y-6">
+                      {interventionPlan.remedial_path.map((step) => {
+                        const Icon = step.activityType === 'video' ? FileVideo : step.activityType === 'quiz' ? FileQuestion : FileText;
+                        return (
+                          <div key={step.step} className="relative flex items-start gap-4 pl-14">
+                            {/* Timeline Node */}
+                            <div className="absolute left-0 w-12 h-12 bg-brand-500 rounded-full flex items-center justify-center text-white shadow-lg">
+                              {step.step}
+                            </div>
+                            
+                            {/* Content Card */}
+                            <div className="flex-1 bg-slate-50 rounded-lg p-4 border-2 border-slate-200 hover:border-brand-500 transition-colors">
+                              <div className="flex items-center gap-3">
+                                <Icon className="w-5 h-5 text-brand-600" />
+                                <div>
+                                  <p className="text-slate-900">{step.topic}</p>
+                                  <p className="text-xs text-slate-500 mt-1 capitalize">{step.activityType}</p>
+                                </div>
                               </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-slate-500 text-center py-8">Unable to generate learning path. Please try again.</p>
+                )}
+              </div>
+
+              {/* Recommended Strategies */}
+              <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+                <h3 className="text-slate-900 mb-4">Recommended Teaching Strategies</h3>
+                {isLoadingInterventionPlan ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="w-4 h-4 animate-spin text-brand-500 mr-2" />
+                    <span className="text-slate-600">Generating recommendations...</span>
+                  </div>
+                ) : interventionPlan ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {interventionPlan.strategies.map((strategy, index) => {
+                      const Icon = strategy.icon === 'calendar' ? Calendar : strategy.icon === 'users' ? Users : strategy.icon === 'trophy' ? Trophy : Bell;
+                      return (
+                        <div key={index} className="bg-slate-50 rounded-lg p-4 border-2 border-slate-200 hover:border-brand-500 transition-colors cursor-pointer group">
+                          <div className="flex items-start gap-3">
+                            <div className="bg-white p-2 rounded-lg group-hover:bg-brand-500 transition-colors">
+                              <Icon className="w-5 h-5 text-brand-600 group-hover:text-white" />
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-slate-900 mb-1">{strategy.title}</p>
+                              <p className="text-sm text-slate-600">{strategy.action}</p>
                             </div>
                           </div>
                         </div>
                       );
                     })}
                   </div>
-                </div>
-              </div>
-
-              {/* Recommended Strategies */}
-              <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-                <h3 className="text-slate-900 mb-4">Recommended Teaching Strategies</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {mockInterventionPlan.strategies.map((strategy, index) => {
-                    const Icon = strategy.icon === 'calendar' ? Calendar : strategy.icon === 'users' ? Users : strategy.icon === 'trophy' ? Trophy : Bell;
-                    return (
-                      <div key={index} className="bg-slate-50 rounded-lg p-4 border-2 border-slate-200 hover:border-brand-500 transition-colors cursor-pointer group">
-                        <div className="flex items-start gap-3">
-                          <div className="bg-white p-2 rounded-lg group-hover:bg-brand-500 transition-colors">
-                            <Icon className="w-5 h-5 text-brand-600 group-hover:text-white" />
-                          </div>
-                          <div className="flex-1">
-                            <p className="text-slate-900 mb-1">{strategy.title}</p>
-                            <p className="text-sm text-slate-600">{strategy.action}</p>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                ) : (
+                  <p className="text-slate-500">Unable to generate strategies.</p>
+                )}
               </div>
 
               {/* Export Printed Materials - Student Specific */}
@@ -1203,15 +1428,17 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
         links={externalLinks}
         onApprove={handleApproveLinkClick}
         onReject={handleRejectLink}
+        students={students}
       />
 
       {/* Classroom Overview Modal */}
       <ClassroomOverviewModal
         isOpen={isClassroomOverviewModalOpen}
         onClose={() => setIsClassroomOverviewModalOpen(false)}
-        classrooms={mockClassrooms}
+        classrooms={classrooms}
         onSelectClassroom={setCurrentClassroomId}
         currentClassroomId={currentClassroomId}
+        students={students}
       />
 
       {/* Edit Class Records Modal */}

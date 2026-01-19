@@ -17,7 +17,7 @@ import {
   updatePassword,
   updateEmail
 } from 'firebase/auth';
-import { Student, RiskLevel, ChatMessage, Module, SystemSettings, Activity } from '../types';
+import { Student, RiskLevel, ChatMessage, Module, SystemSettings, Activity, Classroom } from '../types';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -1129,6 +1129,114 @@ export const adminUserService = {
     } catch (error) {
       console.error('Error exporting users:', error);
       return [];
+    }
+  }
+};
+
+// ============ CLASSROOM SERVICE ============
+
+export const classroomService = {
+  // Get all classrooms
+  async getAll(): Promise<Classroom[]> {
+    try {
+      const querySnapshot = await getDocs(collection(db, COLLECTIONS.classrooms));
+      return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Classroom));
+    } catch (error) {
+      console.error('Error fetching classrooms:', error);
+      return [];
+    }
+  },
+
+  // Get single classroom
+  async getById(classroomId: string): Promise<Classroom | null> {
+    try {
+      const docRef = doc(db, COLLECTIONS.classrooms, classroomId);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        return { id: docSnap.id, ...docSnap.data() } as Classroom;
+      }
+      return null;
+    } catch (error) {
+      console.error('Error fetching classroom:', error);
+      return null;
+    }
+  },
+
+  // Get classrooms by teacher
+  async getByTeacher(teacherId: string): Promise<Classroom[]> {
+    try {
+      const q = query(
+        collection(db, COLLECTIONS.classrooms),
+        where('teacherId', '==', teacherId)
+      );
+      const querySnapshot = await getDocs(q);
+      return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Classroom));
+    } catch (error) {
+      console.error('Error fetching teacher classrooms:', error);
+      return [];
+    }
+  },
+
+  // Create classroom
+  async create(classroom: Omit<Classroom, 'id'>): Promise<string> {
+    try {
+      const docRef = await addDoc(collection(db, COLLECTIONS.classrooms), {
+        ...classroom,
+        createdAt: Timestamp.now()
+      });
+      return docRef.id;
+    } catch (error) {
+      console.error('Error creating classroom:', error);
+      throw error;
+    }
+  },
+
+  // Update classroom
+  async update(classroomId: string, updates: Partial<Classroom>): Promise<void> {
+    try {
+      const docRef = doc(db, COLLECTIONS.classrooms, classroomId);
+      await updateDoc(docRef, {
+        ...updates,
+        updatedAt: Timestamp.now()
+      });
+    } catch (error) {
+      console.error('Error updating classroom:', error);
+      throw error;
+    }
+  },
+
+  // Delete classroom
+  async delete(classroomId: string): Promise<void> {
+    try {
+      await deleteDoc(doc(db, COLLECTIONS.classrooms, classroomId));
+    } catch (error) {
+      console.error('Error deleting classroom:', error);
+      throw error;
+    }
+  },
+
+  // Seed classrooms from mock data (for initial setup)
+  async seedFromMockData(classrooms: Classroom[]): Promise<void> {
+    try {
+      const batch = writeBatch(db);
+      for (const classroom of classrooms) {
+        const docRef = doc(db, COLLECTIONS.classrooms, classroom.id);
+        batch.set(docRef, {
+          name: classroom.name,
+          section: classroom.section,
+          gradeLevel: classroom.gradeLevel,
+          schedule: classroom.schedule,
+          studentCount: classroom.studentCount,
+          semester: classroom.semester,
+          academicYear: classroom.academicYear,
+          room: classroom.room,
+          createdAt: Timestamp.now()
+        });
+      }
+      await batch.commit();
+    } catch (error) {
+      console.error('Error seeding classrooms:', error);
+      throw error;
     }
   }
 };

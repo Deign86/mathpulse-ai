@@ -1,7 +1,6 @@
 import { X, ExternalLink as ExternalLinkIcon, CheckCircle, XCircle, AlertCircle, Youtube, BookOpen, Globe, Monitor } from 'lucide-react';
 import { useState } from 'react';
-import { ExternalLink } from '../types';
-import { mockStudents } from '../utils/mockData';
+import { ExternalLink, Student } from '../types';
 
 interface ExternalLinkValidationModalProps {
   isOpen: boolean;
@@ -9,6 +8,7 @@ interface ExternalLinkValidationModalProps {
   links: ExternalLink[];
   onApprove: (linkId: string) => void;
   onReject: (linkId: string) => void;
+  students: Student[];
 }
 
 export function ExternalLinkValidationModal({ 
@@ -16,7 +16,8 @@ export function ExternalLinkValidationModal({
   onClose, 
   links, 
   onApprove, 
-  onReject 
+  onReject,
+  students
 }: ExternalLinkValidationModalProps) {
   const [selectedLink, setSelectedLink] = useState<ExternalLink | null>(null);
 
@@ -46,7 +47,7 @@ export function ExternalLinkValidationModal({
 
   const getStudentNames = (studentIds: string[]) => {
     return studentIds.map(id => {
-      const student = mockStudents.find(s => s.id === id);
+      const student = students.find(s => s.id === id);
       return student?.name || 'Unknown';
     }).join(', ');
   };

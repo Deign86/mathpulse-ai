@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Plus, 
   Search, 
@@ -23,11 +23,13 @@ import {
 } from 'lucide-react';
 import { mockModuleTemplates, mockSystemUsers, getUsersByRole } from '../../utils/adminMockData';
 import { mockClassrooms } from '../../utils/mockData';
-import { ModuleTemplate } from '../../types';
+import { ModuleTemplate, Classroom } from '../../types';
+import { classroomService } from '../../services/firebase';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
 
 export function ContentManagement() {
   const [modules, setModules] = useState<ModuleTemplate[]>(mockModuleTemplates);
+  const [classrooms, setClassrooms] = useState<Classroom[]>(mockClassrooms);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'video' | 'quiz' | 'exercise'>('all');
   const [filterStatus, setFilterStatus] = useState<'all' | 'draft' | 'published' | 'archived'>('all');
@@ -39,6 +41,21 @@ export function ContentManagement() {
   const [bulkDeleteConfirmOpen, setBulkDeleteConfirmOpen] = useState(false);
 
   const teachers = getUsersByRole('teacher');
+
+  // Load classrooms from Firebase
+  useEffect(() => {
+    const loadClassrooms = async () => {
+      try {
+        const firebaseClassrooms = await classroomService.getAll();
+        if (firebaseClassrooms.length > 0) {
+          setClassrooms(firebaseClassrooms);
+        }
+      } catch (error) {
+        console.error('Error loading classrooms:', error);
+      }
+    };
+    loadClassrooms();
+  }, []);
 
   // Filter modules
   const filteredModules = modules.filter(module => {
@@ -444,7 +461,7 @@ export function ContentManagement() {
       {isModalOpen && (
         <ModuleModal
           module={editingModule}
-          classrooms={mockClassrooms}
+          classrooms={classrooms}
           teachers={teachers}
           onClose={() => {
             setIsModalOpen(false);
@@ -474,7 +491,7 @@ export function ContentManagement() {
 // Module Modal Component
 interface ModuleModalProps {
   module: ModuleTemplate | null;
-  classrooms: typeof import('../../utils/mockData').mockClassrooms;
+  classrooms: Classroom[];
   teachers: ReturnType<typeof getUsersByRole>;
   onClose: () => void;
   onSave: (data: Partial<ModuleTemplate>) => void;

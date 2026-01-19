@@ -22,15 +22,16 @@ import {
   Upload,
   Loader2
 } from 'lucide-react';
-import { SystemUser, UserRole, UserStatus } from '../../types';
+import { SystemUser, UserRole, UserStatus, Classroom } from '../../types';
 import { mockSystemUsers } from '../../utils/adminMockData';
 import { mockClassrooms } from '../../utils/mockData';
-import { adminUserService, UserProfile } from '../../services/firebase';
+import { adminUserService, classroomService, UserProfile } from '../../services/firebase';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
 import { useToast } from '../ui/Toast';
 
 export function UserManagement() {
   const [users, setUsers] = useState<SystemUser[]>([]);
+  const [classrooms, setClassrooms] = useState<Classroom[]>(mockClassrooms);
   const [searchQuery, setSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState<UserRole | 'all'>('all');
   const [statusFilter, setStatusFilter] = useState<UserStatus | 'all'>('all');
@@ -44,6 +45,21 @@ export function UserManagement() {
   const [userToDelete, setUserToDelete] = useState<string | null>(null);
   
   const toast = useToast();
+
+  // Load classrooms from Firebase
+  useEffect(() => {
+    const loadClassrooms = async () => {
+      try {
+        const firebaseClassrooms = await classroomService.getAll();
+        if (firebaseClassrooms.length > 0) {
+          setClassrooms(firebaseClassrooms);
+        }
+      } catch (error) {
+        console.error('Error loading classrooms:', error);
+      }
+    };
+    loadClassrooms();
+  }, []);
 
   // Load users from Firebase on mount
   useEffect(() => {
@@ -594,7 +610,7 @@ export function UserManagement() {
                       className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
                     >
                       <option value="">Select classroom</option>
-                      {mockClassrooms.map(classroom => (
+                      {classrooms.map(classroom => (
                         <option key={classroom.id} value={classroom.id}>
                           {classroom.name} - {classroom.section}
                         </option>

@@ -1,6 +1,5 @@
 import { X, Users, Calendar, MapPin, BookOpen, TrendingUp, AlertCircle } from 'lucide-react';
-import { Classroom } from '../types';
-import { mockStudents } from '../utils/mockData';
+import { Classroom, Student } from '../types';
 import { RiskLevel } from '../types';
 
 interface ClassroomOverviewModalProps {
@@ -9,6 +8,7 @@ interface ClassroomOverviewModalProps {
   classrooms: Classroom[];
   onSelectClassroom: (classroomId: string) => void;
   currentClassroomId: string;
+  students: Student[];
 }
 
 export function ClassroomOverviewModal({ 
@@ -16,20 +16,21 @@ export function ClassroomOverviewModal({
   onClose, 
   classrooms, 
   onSelectClassroom,
-  currentClassroomId 
+  currentClassroomId,
+  students
 }: ClassroomOverviewModalProps) {
   if (!isOpen) return null;
 
   const getClassroomStats = (classroomId: string) => {
-    const students = mockStudents.filter(s => s.classroomId === classroomId);
-    const highRisk = students.filter(s => s.riskLevel === RiskLevel.HIGH).length;
-    const mediumRisk = students.filter(s => s.riskLevel === RiskLevel.MEDIUM).length;
-    const lowRisk = students.filter(s => s.riskLevel === RiskLevel.LOW).length;
-    const avgScore = students.length > 0 
-      ? Math.round(students.reduce((acc, s) => acc + s.avgQuizScore, 0) / students.length)
+    const classroomStudents = students.filter(s => s.classroomId === classroomId);
+    const highRisk = classroomStudents.filter(s => s.riskLevel === RiskLevel.HIGH).length;
+    const mediumRisk = classroomStudents.filter(s => s.riskLevel === RiskLevel.MEDIUM).length;
+    const lowRisk = classroomStudents.filter(s => s.riskLevel === RiskLevel.LOW).length;
+    const avgScore = classroomStudents.length > 0 
+      ? Math.round(classroomStudents.reduce((acc, s) => acc + s.avgQuizScore, 0) / classroomStudents.length)
       : 0;
     
-    return { highRisk, mediumRisk, lowRisk, avgScore, totalStudents: students.length };
+    return { highRisk, mediumRisk, lowRisk, avgScore, totalStudents: classroomStudents.length };
   };
 
   return (

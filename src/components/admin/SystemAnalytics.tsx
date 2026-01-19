@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   TrendingUp, 
   TrendingDown,
@@ -35,11 +35,28 @@ import {
 } from 'recharts';
 import { mockSystemStats, mockSystemUsers, mockModuleTemplates } from '../../utils/adminMockData';
 import { mockStudents } from '../../utils/mockData';
-import { RiskLevel } from '../../types';
+import { RiskLevel, Student } from '../../types';
+import { studentService } from '../../services/firebase';
 
 export function SystemAnalytics() {
   const [dateRange, setDateRange] = useState('7d');
   const [selectedMetric, setSelectedMetric] = useState<'engagement' | 'chat' | 'modules'>('engagement');
+  const [students, setStudents] = useState<Student[]>(mockStudents);
+
+  // Load students from Firebase
+  useEffect(() => {
+    const loadStudents = async () => {
+      try {
+        const firebaseStudents = await studentService.getAll();
+        if (firebaseStudents.length > 0) {
+          setStudents(firebaseStudents);
+        }
+      } catch (error) {
+        console.error('Error loading students:', error);
+      }
+    };
+    loadStudents();
+  }, []);
 
   // Generate mock time-series data
   const engagementData = [
@@ -67,9 +84,9 @@ export function SystemAnalytics() {
   ];
 
   const riskDistribution = [
-    { name: 'Low Risk', value: mockStudents.filter(s => s.riskLevel === RiskLevel.LOW).length, color: '#10b981' },
-    { name: 'Medium Risk', value: mockStudents.filter(s => s.riskLevel === RiskLevel.MEDIUM).length, color: '#f59e0b' },
-    { name: 'High Risk', value: mockStudents.filter(s => s.riskLevel === RiskLevel.HIGH).length, color: '#ef4444' }
+    { name: 'Low Risk', value: students.filter(s => s.riskLevel === RiskLevel.LOW).length, color: '#10b981' },
+    { name: 'Medium Risk', value: students.filter(s => s.riskLevel === RiskLevel.MEDIUM).length, color: '#f59e0b' },
+    { name: 'High Risk', value: students.filter(s => s.riskLevel === RiskLevel.HIGH).length, color: '#ef4444' }
   ];
 
   const hourlyActivity = [
@@ -270,7 +287,7 @@ export function SystemAnalytics() {
               ))}
               <div className="pt-4 border-t border-slate-200">
                 <p className="text-sm text-slate-500">Total Students</p>
-                <p className="text-xl font-bold text-slate-900">{mockStudents.length}</p>
+                <p className="text-xl font-bold text-slate-900">{students.length}</p>
               </div>
             </div>
           </div>
