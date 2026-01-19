@@ -104,7 +104,9 @@ export function LoginView({ onLogin }: LoginViewProps) {
             </label>
             <input
               id="email"
+              name="email"
               type="email"
+              autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="your.email@school.edu"
@@ -121,7 +123,9 @@ export function LoginView({ onLogin }: LoginViewProps) {
             <div className="relative">
               <input
                 id="password"
+                name="password"
                 type={showPassword ? 'text' : 'password'}
+                autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"

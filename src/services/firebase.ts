@@ -62,6 +62,7 @@ export interface UserProfile {
   classroomId?: string;
   studentId?: string;
   createdAt: Date;
+  lastLogin?: Date;
 }
 
 /**
@@ -74,6 +75,13 @@ export const authService = {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const profile = await this.getUserProfile(userCredential.user.uid);
       if (profile) {
+        // Update lastLogin timestamp
+        try {
+          const userDocRef = doc(db, COLLECTIONS.users, userCredential.user.uid);
+          await updateDoc(userDocRef, { lastLogin: Timestamp.now() });
+        } catch (updateError) {
+          console.warn('Could not update lastLogin:', updateError);
+        }
         return { user: userCredential.user, profile };
       }
       return null;

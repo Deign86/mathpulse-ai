@@ -5,8 +5,9 @@ import { StudentView } from './components/StudentView';
 import { AdminPanel } from './components/AdminPanel';
 import { UserAccount } from './utils/demoAccounts';
 import { authService } from './services/firebase';
+import { ToastProvider } from './components/ui/Toast';
 
-export default function App() {
+function AppContent() {
   const [currentUser, setCurrentUser] = useState<UserAccount | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -96,5 +97,13 @@ export default function App() {
       onLogout={handleLogout} 
       currentUser={currentUser}
     />
+  );
+}
+
+export default function App() {
+  return (
+    <ToastProvider>
+      <AppContent />
+    </ToastProvider>
   );
 }

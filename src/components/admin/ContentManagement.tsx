@@ -24,6 +24,7 @@ import {
 import { mockModuleTemplates, mockSystemUsers, getUsersByRole } from '../../utils/adminMockData';
 import { mockClassrooms } from '../../utils/mockData';
 import { ModuleTemplate } from '../../types';
+import { ConfirmDialog } from '../ui/ConfirmDialog';
 
 export function ContentManagement() {
   const [modules, setModules] = useState<ModuleTemplate[]>(mockModuleTemplates);
@@ -33,6 +34,9 @@ export function ContentManagement() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingModule, setEditingModule] = useState<ModuleTemplate | null>(null);
   const [selectedModules, setSelectedModules] = useState<Set<string>>(new Set());
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [moduleToDelete, setModuleToDelete] = useState<string | null>(null);
+  const [bulkDeleteConfirmOpen, setBulkDeleteConfirmOpen] = useState(false);
 
   const teachers = getUsersByRole('teacher');
 
@@ -90,8 +94,14 @@ export function ContentManagement() {
   };
 
   const handleDelete = (moduleId: string) => {
-    if (confirm('Are you sure you want to delete this module? This action cannot be undone.')) {
-      setModules(modules.filter(m => m.id !== moduleId));
+    setModuleToDelete(moduleId);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (moduleToDelete) {
+      setModules(modules.filter(m => m.id !== moduleToDelete));
+      setModuleToDelete(null);
     }
   };
 
@@ -111,15 +121,20 @@ export function ContentManagement() {
     if (selectedModules.size === 0) return;
     
     if (action === 'delete') {
-      if (!confirm(`Are you sure you want to delete ${selectedModules.size} modules?`)) return;
-      setModules(modules.filter(m => !selectedModules.has(m.id)));
-    } else {
-      setModules(modules.map(m => 
-        selectedModules.has(m.id) 
-          ? { ...m, status: action === 'publish' ? 'published' as const : 'archived' as const }
-          : m
-      ));
+      setBulkDeleteConfirmOpen(true);
+      return;
     }
+    
+    setModules(modules.map(m => 
+      selectedModules.has(m.id) 
+        ? { ...m, status: action === 'publish' ? 'published' as const : 'archived' as const }
+        : m
+    ));
+    setSelectedModules(new Set());
+  };
+
+  const confirmBulkDelete = () => {
+    setModules(modules.filter(m => !selectedModules.has(m.id)));
     setSelectedModules(new Set());
   };
 
@@ -151,6 +166,28 @@ export function ContentManagement() {
 
   return (
     <div className="space-y-6">
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        open={deleteConfirmOpen}
+        onOpenChange={setDeleteConfirmOpen}
+        title="Delete Module"
+        description="Are you sure you want to delete this module? This action cannot be undone."
+        confirmText="Delete"
+        variant="destructive"
+        onConfirm={confirmDelete}
+      />
+
+      {/* Bulk Delete Confirmation Dialog */}
+      <ConfirmDialog
+        open={bulkDeleteConfirmOpen}
+        onOpenChange={setBulkDeleteConfirmOpen}
+        title="Delete Multiple Modules"
+        description={`Are you sure you want to delete ${selectedModules.size} modules? This action cannot be undone.`}
+        confirmText="Delete All"
+        variant="destructive"
+        onConfirm={confirmBulkDelete}
+      />
+
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>

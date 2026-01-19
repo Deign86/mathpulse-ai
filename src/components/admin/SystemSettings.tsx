@@ -22,6 +22,8 @@ import {
 import { SystemSettings } from '../../types';
 import { mockSystemSettings } from '../../utils/adminMockData';
 import { settingsService } from '../../services/firebase';
+import { ConfirmDialog } from '../ui/ConfirmDialog';
+import { useToast } from '../ui/Toast';
 
 export function SystemSettingsPanel() {
   const [settings, setSettings] = useState<SystemSettings>(mockSystemSettings);
@@ -30,6 +32,9 @@ export function SystemSettingsPanel() {
   const [activeSection, setActiveSection] = useState('general');
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
+  
+  const toast = useToast();
 
   // Load settings from Firebase on mount
   useEffect(() => {
@@ -60,24 +65,29 @@ export function SystemSettingsPanel() {
       await settingsService.saveSettings(settings);
       setHasChanges(false);
       setShowSaveSuccess(true);
+      toast.success('Settings Saved', 'Your settings have been saved successfully.');
       setTimeout(() => setShowSaveSuccess(false), 3000);
     } catch (error) {
       console.error('Error saving settings:', error);
-      alert('Failed to save settings. Please try again.');
+      toast.error('Save Failed', 'Failed to save settings. Please try again.');
     } finally {
       setIsSaving(false);
     }
   };
 
-  const handleReset = async () => {
-    if (confirm('Are you sure you want to reset all settings to default values?')) {
-      try {
-        await settingsService.saveSettings(mockSystemSettings);
-        setSettings(mockSystemSettings);
-        setHasChanges(false);
-      } catch (error) {
-        console.error('Error resetting settings:', error);
-      }
+  const handleReset = () => {
+    setResetConfirmOpen(true);
+  };
+
+  const confirmReset = async () => {
+    try {
+      await settingsService.saveSettings(mockSystemSettings);
+      setSettings(mockSystemSettings);
+      setHasChanges(false);
+      toast.success('Settings Reset', 'All settings have been restored to defaults.');
+    } catch (error) {
+      console.error('Error resetting settings:', error);
+      toast.error('Reset Failed', 'Failed to reset settings. Please try again.');
     }
   };
 
@@ -103,6 +113,17 @@ export function SystemSettingsPanel() {
 
   return (
     <div className="space-y-6">
+      {/* Reset Confirmation Dialog */}
+      <ConfirmDialog
+        open={resetConfirmOpen}
+        onOpenChange={setResetConfirmOpen}
+        title="Reset Settings"
+        description="Are you sure you want to reset all settings to default values? This cannot be undone."
+        confirmText="Reset All"
+        variant="destructive"
+        onConfirm={confirmReset}
+      />
+
       {/* Alert Banners */}
       {hasChanges && (
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-center justify-between">
