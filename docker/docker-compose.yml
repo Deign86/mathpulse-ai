@@ -1,13 +1,13 @@
 # MathPulse AI - Docker Compose Configuration
-# Run: docker-compose up --build
-# Development: docker-compose up -d
+# Run from project root: docker-compose -f docker/docker-compose.yml up --build
+# Development: docker-compose -f docker/docker-compose.yml up -d
 
 services:
   # ============ Frontend Service ============
   frontend:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: docker/Dockerfile
       args:
         VITE_API_URL: http://localhost:8000
         # Firebase config - set these in .env file or pass as build args
@@ -32,7 +32,7 @@ services:
   # ============ Backend Service ============
   backend:
     build:
-      context: ./backend
+      context: ../backend
       dockerfile: Dockerfile
     container_name: mathpulse-backend
     ports:

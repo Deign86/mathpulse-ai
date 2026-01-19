@@ -3,11 +3,11 @@
 > An AI-powered mathematics learning platform designed to help teachers monitor student progress and provide personalized intervention strategies.
 
 [![Live Demo](https://img.shields.io/badge/Live-mathpulse--ai.vercel.app-00C853?logo=vercel)](https://mathpulse-ai.vercel.app)
-[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker)](DOCKER.md)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker)](docs/DOCKER.md)
 [![React](https://img.shields.io/badge/React-18.3.1-61DAFB?logo=react)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-5.x-646CFF?logo=vite)](https://vitejs.dev/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.x-06B6D4?logo=tailwindcss)](https://tailwindcss.com/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.x-06B6D4?logo=tailwindcss)](https://tailwindcss.com/)
 [![Firebase](https://img.shields.io/badge/Firebase-12.8-FFCA28?logo=firebase)](https://firebase.google.com/)
 [![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python)](https://python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.109-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
@@ -113,7 +113,7 @@ MathPulse AI is a full-stack educational learning management system that leverag
 |----------|-------------|
 | **Framework** | React 18.3.1 with TypeScript 5.x |
 | **Build Tool** | Vite 5.x |
-| **Styling** | Tailwind CSS 3.x with custom design tokens |
+| **Styling** | Tailwind CSS 4.x with CSS-first configuration |
 | **UI Components** | Radix UI Primitives, shadcn/ui (40+ components) |
 | **Charts** | Recharts (PieChart, BarChart, ResponsiveContainer) |
 | **Icons** | Lucide React |
@@ -191,21 +191,25 @@ MathPulse Prototype/
 ├── 📄 index.html                    # HTML entry point
 ├── 📄 package.json                  # Dependencies and scripts
 ├── 📄 vite.config.ts                # Vite configuration
-├── 📄 firebase.json                 # Firebase hosting config
-├── 📄 firestore.rules               # Firestore security rules
 ├── 📄 vercel.json                   # Vercel deployment config
 ├── 📄 README.md                     # Project documentation
-├── 📄 DOCKER.md                     # Docker setup guide
 │
-├── 🐳 Docker Configuration
-├── 📄 Dockerfile                    # Frontend production build
-├── 📄 Dockerfile.dev                # Frontend development build
-├── 📄 docker-compose.yml            # Main Docker orchestration
-├── 📄 docker-compose.dev.yml        # Development override (hot-reload)
-├── 📄 nginx.conf                    # Nginx config for production
-├── 📄 .dockerignore                 # Docker build exclusions
-├── 📄 docker-run.bat                # Windows helper script
-├── 📄 Makefile                      # Unix/Mac helper commands
+├── 📁 config/                       # Configuration files
+│   ├── 📄 firebase.json             # Firebase hosting config
+│   ├── 📄 firestore.rules           # Firestore security rules
+│   ├── 📄 firestore.indexes.json    # Firestore indexes
+│   └── 📄 .firebaserc               # Firebase project settings
+│
+├── 📁 docker/                       # Docker configuration
+│   ├── 📄 Dockerfile                # Frontend production build
+│   ├── 📄 Dockerfile.dev            # Frontend development build
+│   ├── 📄 Dockerfile.hf             # Hugging Face Spaces build
+│   ├── 📄 docker-compose.yml        # Main Docker orchestration
+│   ├── 📄 docker-compose.dev.yml    # Development override (hot-reload)
+│   ├── 📄 nginx.conf                # Nginx config for production
+│   ├── 📄 nginx.hf.conf             # Nginx config for HF Spaces
+│   ├── 📄 docker-run.bat            # Windows helper script
+│   └── 📄 Makefile                  # Unix/Mac helper commands
 │
 ├── 📁 backend/                      # Python ML Backend (HF Spaces)
 │   ├── 📄 main.py                   # FastAPI application (387 lines)
@@ -232,8 +236,11 @@ MathPulse Prototype/
 │   └── 📄 semicolon_format.csv
 │
 ├── 📁 docs/                         # Documentation
+│   ├── 📄 DOCKER.md                 # Docker setup guide
+│   ├── 📄 README.hf.md              # Hugging Face Spaces README
 │   ├── 📄 Attributions.md
 │   ├── 📄 CAPSTONE_PRESENTATION.md
+│   ├── 📄 PRESENTATION_OUTLINE.md
 │   └── 📄 QUICK_REFERENCE_SHEET.md
 │
 └── 📁 src/                          # Frontend source code
@@ -282,9 +289,6 @@ MathPulse Prototype/
     │   ├── 📄 mockData.ts           # Prototype data (students, modules, etc.)
     │   ├── 📄 demoAccounts.ts       # Demo login credentials
     │   └── 📄 adminMockData.ts      # Admin panel mock data
-    │
-    ├── 📁 styles/                   # Global styles
-    │   └── 📄 globals.css           # Tailwind + custom CSS variables
     │
     └── 📁 guidelines/               # Development guidelines
         └── 📄 Guidelines.md         # Design system documentation

@@ -37,12 +37,12 @@ goto end
 
 :build
 echo Building Docker images...
-docker-compose build
+docker-compose -f docker-compose.yml build
 goto end
 
 :up
 echo Starting MathPulse AI (Production)...
-docker-compose up -d
+docker-compose -f docker-compose.yml up -d
 echo.
 echo ✅ MathPulse AI is running!
 echo    Frontend: http://localhost:3000
@@ -64,29 +64,29 @@ goto end
 
 :down
 echo Stopping all services...
-docker-compose down
+docker-compose -f docker-compose.yml down
 echo ✅ All services stopped.
 goto end
 
 :logs
-docker-compose logs -f
+docker-compose -f docker-compose.yml logs -f
 goto end
 
 :restart
 echo Restarting all services...
-docker-compose restart
+docker-compose -f docker-compose.yml restart
 echo ✅ All services restarted.
 goto end
 
 :clean
 echo Cleaning up Docker resources...
-docker-compose down -v
+docker-compose -f docker-compose.yml down -v
 docker system prune -f
 echo ✅ Cleanup complete.
 goto end
 
 :status
-docker-compose ps
+docker-compose -f docker-compose.yml ps
 goto end
 
 :health

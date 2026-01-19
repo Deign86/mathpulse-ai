@@ -1,43 +1,47 @@
 # Dependencies
-node_modules
-backend/venv
-__pycache__
+node_modules/
+venv/
+backend/venv/
+__pycache__/
 *.pyc
+*.pyo
 
 # Environment files (contain API keys and secrets)
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.*
+!.env.example
 backend/.env
-*.env
 
 # Firebase
 firebase-debug.log
 firebase-debug.*.log
-.firebase
+.firebase/
 firebaseServiceAccount.json
 *-service-account.json
 *.pem
 
 # Build outputs
-dist
-build
+dist/
+build/
 *.log
 
-# IDE
-.idea
-.vscode
+# IDE and Editor
+.idea/
 *.swp
 *.swo
 .DS_Store
+Thumbs.db
 
 # Test coverage
-coverage
-.nyc_output
+coverage/
+.nyc_output/
 
 # Misc
 *.local
-.cache
-.vercel
+.cache/
+.vercel/
+
+# OS files
+.DS_Store
+*.bak
+*.tmp

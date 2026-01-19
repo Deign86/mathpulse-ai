@@ -17,6 +17,25 @@
 State flows from `App.tsx` → view components via props. No external state library—use `useState` and prop drilling.
 For shared data (students, activities), use Firebase real-time subscriptions in `useEffect`.
 
+## Project Structure
+
+```
+├── src/                    # Frontend source code
+│   ├── components/         # React components
+│   │   ├── ui/            # shadcn/ui primitives (do not modify)
+│   │   └── admin/         # Admin panel sub-components
+│   ├── services/          # API and Firebase services
+│   ├── utils/             # Mock data and utilities
+│   └── guidelines/        # Design guidelines
+├── backend/               # FastAPI Python backend
+│   └── services/          # ML and document parsing services
+├── config/                # Firebase configuration files
+├── docker/                # Docker and deployment files
+├── docs/                  # Documentation
+├── scripts/               # Database seeding scripts
+└── test_data/             # Sample CSV files for testing
+```
+
 ## Key Files
 
 | File | Purpose |
@@ -27,7 +46,8 @@ For shared data (students, activities), use Firebase real-time subscriptions in 
 | `src/services/api.ts` | Backend API client with fallback handling |
 | `src/services/firebase.ts` | Firebase SDK integration (all Firestore services) |
 | `src/guidelines/Guidelines.md` | Design tokens, colors, component patterns |
-| `src/components/ui/` | shadcn/ui primitives—**do not modify** unless necessary |
+| `config/firebase.json` | Firebase project configuration |
+| `docker/` | All Docker and deployment configuration |
 
 ## Development Commands
 
@@ -45,6 +65,10 @@ python -m uvicorn main:app --reload --port 8000
 
 # Firebase
 node scripts/injectFirebaseData.mjs  # Seed database
+
+# Docker (from docker/ folder)
+cd docker
+docker-compose up --build
 ```
 
 ## Deployment URLs

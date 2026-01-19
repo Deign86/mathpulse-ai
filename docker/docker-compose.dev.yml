@@ -1,15 +1,13 @@
 # MathPulse AI - Docker Compose Development Override
-# Usage: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+# Usage: docker-compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up
 # This enables hot-reload and development features
-
-version: '3.8'
 
 services:
   # ============ Frontend Dev Service ============
   frontend-dev:
     build:
-      context: .
-      dockerfile: Dockerfile.dev
+      context: ..
+      dockerfile: docker/Dockerfile.dev
     container_name: mathpulse-frontend-dev
     ports:
       - "5173:5173"
@@ -18,7 +16,7 @@ services:
       - NODE_ENV=development
     volumes:
       # Mount source code for hot-reload
-      - .:/app
+      - ..:/app
       - /app/node_modules
     depends_on:
       - backend-dev
@@ -30,7 +28,7 @@ services:
   # ============ Backend Dev Service ============
   backend-dev:
     build:
-      context: ./backend
+      context: ../backend
       dockerfile: Dockerfile
     container_name: mathpulse-backend-dev
     ports:
@@ -41,7 +39,7 @@ services:
       - DEBUG=true
     volumes:
       # Mount source code for hot-reload
-      - ./backend:/app
+      - ../backend:/app
     networks:
       - mathpulse-dev-network
     # Override command for development with auto-reload

@@ -30,12 +30,19 @@ Edit `.env` file if you need to customize:
 
 **Production Mode** (optimized build):
 ```bash
-docker-compose up --build
+docker-compose -f docker/docker-compose.yml up --build
 ```
 
 **Development Mode** (with hot-reload):
 ```bash
-docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+docker-compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up --build
+```
+
+**Or use the helper script (from docker/ folder)**:
+```bash
+cd docker
+docker-run.bat up    # Production
+docker-run.bat dev   # Development
 ```
 
 ### 4. Access the Application
@@ -60,44 +67,44 @@ For development mode:
 
 ```bash
 # Start all services in background
-docker-compose up -d
+docker-compose -f docker/docker-compose.yml up -d
 
 # Start with logs visible
-docker-compose up
+docker-compose -f docker/docker-compose.yml up
 
 # Rebuild and start (after code changes)
-docker-compose up --build
+docker-compose -f docker/docker-compose.yml up --build
 ```
 
 ### Stopping Services
 
 ```bash
 # Stop all services
-docker-compose down
+docker-compose -f docker/docker-compose.yml down
 
 # Stop and remove volumes (clean slate)
-docker-compose down -v
+docker-compose -f docker/docker-compose.yml down -v
 ```
 
 ### Viewing Logs
 
 ```bash
 # View all logs
-docker-compose logs
+docker-compose -f docker/docker-compose.yml logs
 
 # View specific service logs
-docker-compose logs frontend
-docker-compose logs backend
+docker-compose -f docker/docker-compose.yml logs frontend
+docker-compose -f docker/docker-compose.yml logs backend
 
 # Follow logs in real-time
-docker-compose logs -f
+docker-compose -f docker/docker-compose.yml logs -f
 ```
 
 ### Rebuilding
 
 ```bash
 # Rebuild a specific service
-docker-compose build frontend
+docker-compose -f docker/docker-compose.yml build frontend
 docker-compose build backend
 
 # Rebuild everything from scratch (no cache)
