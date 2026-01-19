@@ -126,10 +126,10 @@ export function ExportPrintedMaterialsModal({ isOpen, onClose, students = [], se
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white border border-slate-200 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col shadow-2xl">
         {/* Header */}
-        <div className="bg-gradient-to-r from-purple-500 to-purple-600 p-6 text-white">
+        <div className="bg-gradient-to-r from-primary-600 to-primary-700 p-6 text-white">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-3">
               <div className="bg-white/20 p-2 rounded-lg">
@@ -153,18 +153,18 @@ export function ExportPrintedMaterialsModal({ isOpen, onClose, students = [], se
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
           {/* Format Selection */}
           <div>
-            <label className="block text-slate-700 mb-3">Export Format</label>
+            <label className="block text-slate-700 font-medium mb-3">Export Format</label>
             <div className="flex gap-3">
               <button
                 onClick={() => setFormat('pdf')}
                 className={`flex-1 p-4 rounded-lg border-2 transition-all ${
                   format === 'pdf'
-                    ? 'border-purple-500 bg-purple-50'
-                    : 'border-slate-200 hover:border-purple-300'
+                    ? 'border-primary-500 bg-primary-50'
+                    : 'border-slate-200 hover:border-primary-300 bg-white'
                 }`}
               >
                 <div className="flex items-center gap-2 justify-center">
-                  <FileText className="w-5 h-5" />
+                  <FileText className="w-5 h-5 text-primary-500" />
                   <span className="text-slate-900">PDF</span>
                 </div>
                 <p className="text-xs text-slate-500 mt-1">Best for printing</p>
@@ -173,12 +173,12 @@ export function ExportPrintedMaterialsModal({ isOpen, onClose, students = [], se
                 onClick={() => setFormat('docx')}
                 className={`flex-1 p-4 rounded-lg border-2 transition-all ${
                   format === 'docx'
-                    ? 'border-purple-500 bg-purple-50'
-                    : 'border-slate-200 hover:border-purple-300'
+                    ? 'border-primary-500 bg-primary-50'
+                    : 'border-slate-200 hover:border-primary-300 bg-white'
                 }`}
               >
                 <div className="flex items-center gap-2 justify-center">
-                  <FileText className="w-5 h-5" />
+                  <FileText className="w-5 h-5 text-primary-500" />
                   <span className="text-slate-900">DOCX</span>
                 </div>
                 <p className="text-xs text-slate-500 mt-1">Editable format</p>
@@ -188,10 +188,10 @@ export function ExportPrintedMaterialsModal({ isOpen, onClose, students = [], se
 
           {/* Materials Selection */}
           <div>
-            <label className="block text-slate-700 mb-3">
+            <label className="block text-slate-700 font-medium mb-3">
               Select Materials to Export
               {selectedStudent && (
-                <span className="text-purple-600 ml-2">(for {selectedStudent.name})</span>
+                <span className="text-primary-500 ml-2">(for {selectedStudent.name})</span>
               )}
             </label>
             <div className="space-y-3">
@@ -209,23 +209,23 @@ export function ExportPrintedMaterialsModal({ isOpen, onClose, students = [], se
                       isDisabled
                         ? 'border-slate-100 bg-slate-50 opacity-50 cursor-not-allowed'
                         : isSelected
-                        ? 'border-purple-500 bg-purple-50'
-                        : 'border-slate-200 hover:border-purple-300'
+                        ? 'border-primary-500 bg-primary-50'
+                        : 'border-slate-200 hover:border-primary-300 bg-white'
                     }`}
                   >
                     <div className="flex items-start gap-3">
                       <div className={`p-2 rounded-lg ${
-                        isDisabled ? 'bg-slate-200 text-slate-400' :
-                        isSelected ? 'bg-purple-500 text-white' : 'bg-slate-100 text-slate-600'
+                        isDisabled ? 'bg-slate-100 text-slate-400' :
+                        isSelected ? 'bg-primary-500 text-white' : 'bg-slate-100 text-slate-500'
                       }`}>
                         <Icon className="w-5 h-5" />
                       </div>
                       <div className="flex-1">
-                        <p className={`mb-1 ${isDisabled ? 'text-slate-400' : 'text-slate-900'}`}>{material.title}</p>
-                        <p className={`text-sm ${isDisabled ? 'text-slate-300' : 'text-slate-500'}`}>{material.description}</p>
+                        <p className={`mb-1 font-medium ${isDisabled ? 'text-slate-400' : 'text-slate-900'}`}>{material.title}</p>
+                        <p className={`text-sm ${isDisabled ? 'text-slate-400' : 'text-slate-500'}`}>{material.description}</p>
                       </div>
                       {isSelected && !isDisabled && (
-                        <div className="bg-purple-500 text-white p-1 rounded">
+                        <div className="bg-primary-500 text-white p-1 rounded">
                           <CheckSquare className="w-5 h-5" />
                         </div>
                       )}
@@ -237,9 +237,9 @@ export function ExportPrintedMaterialsModal({ isOpen, onClose, students = [], se
           </div>
 
           {/* Info Box */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h4 className="text-blue-900 mb-2 text-sm">Offline Learning Support</h4>
-            <p className="text-sm text-blue-800">
+          <div className="bg-primary-50 border border-primary-200 rounded-lg p-4">
+            <h4 className="text-primary-700 font-medium mb-2 text-sm">Offline Learning Support</h4>
+            <p className="text-sm text-slate-600">
               These materials are designed for students who may have limited or no internet access. 
               All AI recommendations and personalized content will be included in an easy-to-print format.
             </p>
@@ -247,9 +247,9 @@ export function ExportPrintedMaterialsModal({ isOpen, onClose, students = [], se
         </div>
 
         {/* Footer */}
-        <div className="border-t border-slate-200 p-6 bg-slate-50">
+        <div className="bg-slate-50 border-t border-slate-200 p-6">
           <div className="flex items-center justify-between">
-            <p className="text-sm text-slate-600">
+            <p className="text-sm text-slate-500">
               {selectedMaterials.length} material{selectedMaterials.length !== 1 ? 's' : ''} selected
               {targetStudents.length > 0 && ` • ${targetStudents.length} student${targetStudents.length !== 1 ? 's' : ''}`}
             </p>
@@ -257,7 +257,7 @@ export function ExportPrintedMaterialsModal({ isOpen, onClose, students = [], se
               <button
                 onClick={onClose}
                 disabled={isExporting}
-                className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors disabled:opacity-50"
+                className="px-4 py-2 text-slate-600 hover:bg-slate-200 rounded-lg transition-colors disabled:opacity-50"
               >
                 Cancel
               </button>
@@ -266,8 +266,8 @@ export function ExportPrintedMaterialsModal({ isOpen, onClose, students = [], se
                 disabled={selectedMaterials.length === 0 || isExporting}
                 className={`flex items-center gap-2 px-6 py-2 rounded-lg transition-all ${
                   selectedMaterials.length === 0 || isExporting
-                    ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-purple-500 to-purple-600 text-white hover:from-purple-600 hover:to-purple-700 shadow-md hover:shadow-lg'
+                    ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-primary-600 to-primary-700 text-white hover:from-primary-500 hover:to-primary-600 shadow-md hover:shadow-lg'
                 }`}
               >
                 {isExporting ? (

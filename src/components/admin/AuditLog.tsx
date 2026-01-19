@@ -60,20 +60,20 @@ export function AuditLogPanel() {
 
   const getSeverityColor = (severity: AuditLogEntry['severity']) => {
     switch (severity) {
-      case 'info': return 'bg-blue-100 text-blue-600 border-blue-200';
-      case 'warning': return 'bg-amber-100 text-amber-600 border-amber-200';
-      case 'error': return 'bg-red-100 text-red-600 border-red-200';
-      case 'critical': return 'bg-red-200 text-red-800 border-red-300';
+      case 'info': return 'text-cyan-400 bg-cyan-500/20 border-cyan-500/30';
+      case 'warning': return 'text-amber-400 bg-amber-500/20 border-amber-500/30';
+      case 'error': return 'text-red-400 bg-red-500/20 border-red-500/30';
+      case 'critical': return 'text-red-300 bg-red-600/20 border-red-600/30';
     }
   };
 
   const getCategoryColor = (category: AuditLogEntry['category']) => {
     switch (category) {
-      case 'auth': return 'bg-purple-100 text-purple-700';
-      case 'user': return 'bg-blue-100 text-blue-700';
-      case 'content': return 'bg-green-100 text-green-700';
-      case 'system': return 'bg-slate-100 text-slate-700';
-      case 'data': return 'bg-amber-100 text-amber-700';
+      case 'auth': return 'text-purple-400 bg-purple-500/20 border border-purple-500/30';
+      case 'user': return 'text-cyan-400 bg-cyan-500/20 border border-cyan-500/30';
+      case 'content': return 'text-emerald-400 bg-emerald-500/20 border border-emerald-500/30';
+      case 'system': return 'text-slate-300 bg-slate-500/20 border border-slate-500/30';
+      case 'data': return 'text-amber-400 bg-amber-500/20 border border-amber-500/30';
     }
   };
 
@@ -87,9 +87,9 @@ export function AuditLogPanel() {
 
   const getRoleColor = (role: AuditLogEntry['userRole']) => {
     switch (role) {
-      case 'admin': return 'text-purple-600';
-      case 'teacher': return 'text-blue-600';
-      case 'student': return 'text-green-600';
+      case 'admin': return 'text-purple-400';
+      case 'teacher': return 'text-cyan-400';
+      case 'student': return 'text-emerald-400';
     }
   };
 
@@ -131,14 +131,14 @@ export function AuditLogPanel() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h3 className="text-lg font-semibold text-slate-900">Audit Log</h3>
+          <h3 className="text-lg font-semibold text-slate-800">Audit Log</h3>
           <p className="text-sm text-slate-500">System activity monitoring and security events</p>
         </div>
         <div className="flex gap-3">
           <select
             value={dateRange}
             onChange={(e) => setDateRange(e.target.value)}
-            className="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="px-3 py-2 bg-white border border-primary-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-500"
           >
             <option value="24h">Last 24 hours</option>
             <option value="7d">Last 7 days</option>
@@ -147,7 +147,7 @@ export function AuditLogPanel() {
           </select>
           <button
             onClick={handleExport}
-            className="flex items-center gap-2 px-4 py-2 border border-slate-300 rounded-lg text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 border border-primary-200 rounded-xl text-sm text-slate-600 hover:bg-primary-50 transition-colors cursor-pointer"
           >
             <Download className="w-4 h-4" />
             Export CSV
@@ -157,42 +157,42 @@ export function AuditLogPanel() {
 
       {/* Stats Overview */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <div className="bg-white rounded-lg p-4 shadow-sm border border-slate-200">
+        <div className="glass-card p-4">
           <p className="text-sm text-slate-500">Total Events</p>
-          <p className="text-2xl font-bold text-slate-900">{stats.total}</p>
+          <p className="text-2xl font-bold text-slate-800">{stats.total}</p>
         </div>
-        <div className="bg-white rounded-lg p-4 shadow-sm border border-blue-200">
+        <div className="glass-card p-4 border-primary-200">
           <div className="flex items-center gap-2">
-            <Info className="w-4 h-4 text-blue-500" />
+            <Info className="w-4 h-4 text-primary-500" />
             <p className="text-sm text-slate-500">Info</p>
           </div>
-          <p className="text-2xl font-bold text-blue-600">{stats.info}</p>
+          <p className="text-2xl font-bold text-primary-600">{stats.info}</p>
         </div>
-        <div className="bg-white rounded-lg p-4 shadow-sm border border-amber-200">
+        <div className="glass-card p-4 border-amber-200">
           <div className="flex items-center gap-2">
             <AlertTriangle className="w-4 h-4 text-amber-500" />
             <p className="text-sm text-slate-500">Warnings</p>
           </div>
           <p className="text-2xl font-bold text-amber-600">{stats.warning}</p>
         </div>
-        <div className="bg-white rounded-lg p-4 shadow-sm border border-red-200">
+        <div className="glass-card p-4 border-red-200">
           <div className="flex items-center gap-2">
             <AlertCircle className="w-4 h-4 text-red-500" />
             <p className="text-sm text-slate-500">Errors</p>
           </div>
           <p className="text-2xl font-bold text-red-600">{stats.error}</p>
         </div>
-        <div className="bg-white rounded-lg p-4 shadow-sm border border-red-300">
+        <div className="glass-card p-4 border-red-300">
           <div className="flex items-center gap-2">
-            <XCircle className="w-4 h-4 text-red-700" />
+            <XCircle className="w-4 h-4 text-red-600" />
             <p className="text-sm text-slate-500">Critical</p>
           </div>
-          <p className="text-2xl font-bold text-red-700">{stats.critical}</p>
+          <p className="text-2xl font-bold text-red-600">{stats.critical}</p>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-200">
+      <div className="glass-card p-4">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -201,14 +201,14 @@ export function AuditLogPanel() {
               placeholder="Search by user, action, or details..."
               value={searchQuery}
               onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-              className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="w-full pl-10 pr-4 py-2 bg-white border border-primary-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
           </div>
           <div className="flex flex-wrap gap-3">
             <select
               value={filterCategory}
               onChange={(e) => { setFilterCategory(e.target.value as typeof filterCategory); setCurrentPage(1); }}
-              className="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="px-3 py-2 bg-white border border-primary-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
               <option value="all">All Categories</option>
               <option value="auth">Authentication</option>
@@ -220,7 +220,7 @@ export function AuditLogPanel() {
             <select
               value={filterSeverity}
               onChange={(e) => { setFilterSeverity(e.target.value as typeof filterSeverity); setCurrentPage(1); }}
-              className="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="px-3 py-2 bg-white border border-primary-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
               <option value="all">All Severity</option>
               <option value="info">Info</option>
@@ -231,7 +231,7 @@ export function AuditLogPanel() {
             <select
               value={filterRole}
               onChange={(e) => { setFilterRole(e.target.value as typeof filterRole); setCurrentPage(1); }}
-              className="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="px-3 py-2 bg-white border border-primary-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
               <option value="all">All Roles</option>
               <option value="admin">Admin</option>
@@ -243,10 +243,10 @@ export function AuditLogPanel() {
       </div>
 
       {/* Log Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      <div className="glass-card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-slate-50 border-b border-slate-200">
+            <thead className="bg-primary-50 border-b border-primary-100">
               <tr>
                 <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Severity</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Timestamp</th>
@@ -257,12 +257,12 @@ export function AuditLogPanel() {
                 <th className="px-4 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">View</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-200">
+            <tbody className="divide-y divide-primary-50">
               {paginatedLogs.map((log) => {
                 const SeverityIcon = getSeverityIcon(log.severity);
                 const RoleIcon = getRoleIcon(log.userRole);
                 return (
-                  <tr key={log.id} className="hover:bg-slate-50">
+                  <tr key={log.id} className="hover:bg-primary-50 transition-colors">
                     <td className="px-4 py-3">
                       <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs border ${getSeverityColor(log.severity)}`}>
                         <SeverityIcon className="w-3 h-3" />
@@ -270,8 +270,8 @@ export function AuditLogPanel() {
                       </div>
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex items-center gap-2 text-sm text-slate-600">
-                        <Clock className="w-3 h-3 text-slate-400" />
+                      <div className="flex items-center gap-2 text-sm text-slate-400">
+                        <Clock className="w-3 h-3 text-slate-500" />
                         <span>{log.timestamp}</span>
                       </div>
                     </td>
@@ -279,13 +279,13 @@ export function AuditLogPanel() {
                       <div className="flex items-center gap-2">
                         <RoleIcon className={`w-4 h-4 ${getRoleColor(log.userRole)}`} />
                         <div>
-                          <p className="text-sm font-medium text-slate-900">{log.userName}</p>
+                          <p className="text-sm font-medium text-white">{log.userName}</p>
                           <p className="text-xs text-slate-500 capitalize">{log.userRole}</p>
                         </div>
                       </div>
                     </td>
                     <td className="px-4 py-3">
-                      <p className="text-sm text-slate-900">{log.action}</p>
+                      <p className="text-sm text-white">{log.action}</p>
                     </td>
                     <td className="px-4 py-3">
                       <span className={`px-2 py-1 rounded-full text-xs capitalize ${getCategoryColor(log.category)}`}>
@@ -293,14 +293,14 @@ export function AuditLogPanel() {
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      <p className="text-sm text-slate-600 truncate max-w-xs" title={log.details}>
+                      <p className="text-sm text-slate-400 truncate max-w-xs" title={log.details}>
                         {log.details}
                       </p>
                     </td>
                     <td className="px-4 py-3 text-right">
                       <button
                         onClick={() => setSelectedLog(log)}
-                        className="p-2 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors"
+                        className="p-2 text-slate-400 hover:text-primary-400 hover:bg-primary-500/20 rounded-lg transition-colors cursor-pointer"
                       >
                         <Eye className="w-4 h-4" />
                       </button>
@@ -314,22 +314,22 @@ export function AuditLogPanel() {
 
         {filteredLogs.length === 0 && (
           <div className="py-12 text-center">
-            <FileText className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-            <p className="text-slate-500">No log entries found matching your criteria</p>
+            <FileText className="w-12 h-12 text-slate-500 mx-auto mb-4" />
+            <p className="text-slate-400">No log entries found matching your criteria</p>
           </div>
         )}
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="px-4 py-3 border-t border-slate-200 flex items-center justify-between">
-            <p className="text-sm text-slate-600">
+          <div className="px-4 py-3 border-t border-white/10 flex items-center justify-between">
+            <p className="text-sm text-slate-400">
               Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, filteredLogs.length)} of {filteredLogs.length} entries
             </p>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
-                className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 text-slate-400 hover:bg-white/10 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
@@ -348,10 +348,10 @@ export function AuditLogPanel() {
                   <button
                     key={pageNum}
                     onClick={() => setCurrentPage(pageNum)}
-                    className={`w-8 h-8 rounded-lg text-sm transition-colors ${
+                    className={`w-8 h-8 rounded-lg text-sm transition-colors cursor-pointer ${
                       currentPage === pageNum
-                        ? 'bg-brand-500 text-white'
-                        : 'text-slate-600 hover:bg-slate-100'
+                        ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white'
+                        : 'text-slate-400 hover:bg-white/10'
                     }`}
                   >
                     {pageNum}
@@ -361,7 +361,7 @@ export function AuditLogPanel() {
               <button
                 onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                 disabled={currentPage === totalPages}
-                className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 text-slate-400 hover:bg-white/10 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
@@ -372,20 +372,20 @@ export function AuditLogPanel() {
 
       {/* Log Detail Modal */}
       {selectedLog && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg">
-            <div className="p-6 border-b border-slate-200">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="glass-card w-full max-w-lg border border-white/10">
+            <div className="p-6 border-b border-white/10 bg-gradient-to-r from-primary-600 to-primary-700">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-slate-900">Log Details</h3>
+                <h3 className="text-lg font-semibold text-white">Log Details</h3>
                 <button
                   onClick={() => setSelectedLog(null)}
-                  className="text-slate-400 hover:text-slate-600"
+                  className="text-white/60 hover:text-white transition-colors cursor-pointer"
                 >
                   <XCircle className="w-5 h-5" />
                 </button>
               </div>
             </div>
-            <div className="p-6 space-y-4">
+            <div className="p-6 space-y-4 bg-[#1A1425]">
               <div className="flex items-center gap-3">
                 {(() => {
                   const SeverityIcon = getSeverityIcon(selectedLog.severity);
@@ -404,7 +404,7 @@ export function AuditLogPanel() {
               <div className="space-y-3">
                 <div>
                   <p className="text-xs text-slate-500 uppercase tracking-wider">Timestamp</p>
-                  <p className="text-sm text-slate-900 mt-1">{selectedLog.timestamp}</p>
+                  <p className="text-sm text-white mt-1">{selectedLog.timestamp}</p>
                 </div>
 
                 <div>
@@ -414,38 +414,38 @@ export function AuditLogPanel() {
                       const RoleIcon = getRoleIcon(selectedLog.userRole);
                       return <RoleIcon className={`w-4 h-4 ${getRoleColor(selectedLog.userRole)}`} />;
                     })()}
-                    <span className="text-sm text-slate-900">{selectedLog.userName}</span>
+                    <span className="text-sm text-white">{selectedLog.userName}</span>
                     <span className="text-xs text-slate-500">({selectedLog.userRole})</span>
                   </div>
                 </div>
 
                 <div>
                   <p className="text-xs text-slate-500 uppercase tracking-wider">Action</p>
-                  <p className="text-sm text-slate-900 mt-1">{selectedLog.action}</p>
+                  <p className="text-sm text-white mt-1">{selectedLog.action}</p>
                 </div>
 
                 <div>
                   <p className="text-xs text-slate-500 uppercase tracking-wider">Details</p>
-                  <p className="text-sm text-slate-700 mt-1 bg-slate-50 p-3 rounded-lg">{selectedLog.details}</p>
+                  <p className="text-sm text-slate-300 mt-1 bg-white/5 p-3 rounded-xl border border-white/10">{selectedLog.details}</p>
                 </div>
 
                 {selectedLog.ipAddress && (
                   <div>
                     <p className="text-xs text-slate-500 uppercase tracking-wider">IP Address</p>
-                    <p className="text-sm text-slate-900 mt-1 font-mono">{selectedLog.ipAddress}</p>
+                    <p className="text-sm text-white mt-1 font-mono">{selectedLog.ipAddress}</p>
                   </div>
                 )}
 
                 <div>
                   <p className="text-xs text-slate-500 uppercase tracking-wider">Event ID</p>
-                  <p className="text-sm text-slate-900 mt-1 font-mono">{selectedLog.id}</p>
+                  <p className="text-sm text-white mt-1 font-mono">{selectedLog.id}</p>
                 </div>
               </div>
             </div>
-            <div className="p-4 border-t border-slate-200 flex justify-end">
+            <div className="p-4 border-t border-white/10 flex justify-end bg-[#1A1425]">
               <button
                 onClick={() => setSelectedLog(null)}
-                className="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors"
+                className="px-4 py-2 bg-white/10 text-slate-300 rounded-xl hover:bg-white/20 transition-colors cursor-pointer"
               >
                 Close
               </button>

@@ -208,3 +208,22 @@ Manual testing checklist:
 | Teacher | `prof.anderson@school.edu` | `demo123` |
 | Student | `alex.johnson@school.edu` | `demo123` |
 | Admin | `admin@mathpulse.edu` | `demo123` |
+
+## Context7 Auto-Invocation Rule
+
+When answering questions about libraries, frameworks, or APIs (React, Vite, Firebase, FastAPI, Tailwind CSS, shadcn/ui, Recharts, etc.):
+1. **Always** use `resolve-library-id` first to find the Context7-compatible library ID
+2. **Then** use `get-library-docs` to fetch up-to-date documentation before providing code examples
+3. Use `mode='code'` for API references and code examples, `mode='info'` for conceptual guides
+
+This ensures all code suggestions use current, accurate documentation rather than potentially outdated training data.
+
+## Serena MCP Auto-Activation Rule
+
+When performing any code-related tasks (refactoring, symbol lookup, code navigation, editing, or analysis):
+1. **Always** activate Serena MCP tools by calling `mcp_serena_find_symbol` first to enable semantic code operations
+2. **Use** `mcp_serena_get_symbols_overview` for understanding file structure before making changes
+3. **Prefer** symbolic tools (`find_symbol`, `find_referencing_symbols`, `replace_symbol_body`) over raw text edits for precision
+4. **Use** `mcp_serena_search_for_pattern` for flexible regex-based searches when symbol names are unknown
+
+This ensures intelligent, symbol-aware code modifications that maintain codebase integrity. Sync via Settings Sync for multi-device use.

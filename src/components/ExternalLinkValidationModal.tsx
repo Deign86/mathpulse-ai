@@ -53,10 +53,10 @@ export function ExternalLinkValidationModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white border border-slate-200 rounded-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden flex flex-col shadow-2xl">
         {/* Header */}
-        <div className="bg-gradient-to-r from-indigo-500 to-indigo-600 p-6 text-white">
+        <div className="bg-gradient-to-r from-primary-600 to-primary-700 p-6 text-white">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-3">
               <div className="bg-white/20 p-2 rounded-lg">
@@ -80,16 +80,16 @@ export function ExternalLinkValidationModal({
         <div className="bg-slate-50 border-b border-slate-200 px-6 py-4">
           <div className="grid grid-cols-3 gap-4">
             <div className="text-center">
-              <p className="text-2xl text-amber-600">{pendingLinks.length}</p>
-              <p className="text-sm text-slate-600">Pending Review</p>
+              <p className="text-2xl font-semibold text-amber-500">{pendingLinks.length}</p>
+              <p className="text-sm text-slate-500">Pending Review</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl text-green-600">{approvedLinks.length}</p>
-              <p className="text-sm text-slate-600">Approved</p>
+              <p className="text-2xl font-semibold text-emerald-500">{approvedLinks.length}</p>
+              <p className="text-sm text-slate-500">Approved</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl text-red-600">{rejectedLinks.length}</p>
-              <p className="text-sm text-slate-600">Rejected</p>
+              <p className="text-2xl font-semibold text-red-500">{rejectedLinks.length}</p>
+              <p className="text-sm text-slate-500">Rejected</p>
             </div>
           </div>
         </div>
@@ -98,12 +98,12 @@ export function ExternalLinkValidationModal({
         <div className="flex-1 overflow-hidden flex">
           {/* Links List */}
           <div className="w-1/2 border-r border-slate-200 overflow-y-auto p-6">
-            <h3 className="text-slate-900 mb-4">Pending Validation ({pendingLinks.length})</h3>
+            <h3 className="text-slate-900 font-medium mb-4">Pending Validation ({pendingLinks.length})</h3>
             
             {pendingLinks.length === 0 ? (
               <div className="text-center py-12">
-                <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-3" />
-                <p className="text-slate-600">All links have been reviewed!</p>
+                <CheckCircle className="w-12 h-12 text-emerald-400 mx-auto mb-3" />
+                <p className="text-slate-400">All links have been reviewed!</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -115,8 +115,8 @@ export function ExternalLinkValidationModal({
                       onClick={() => setSelectedLink(link)}
                       className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
                         selectedLink?.id === link.id
-                          ? 'border-indigo-500 bg-indigo-50'
-                          : 'border-slate-200 hover:border-indigo-300'
+                          ? 'border-primary-500 bg-primary-50'
+                          : 'border-slate-200 hover:border-primary-300 bg-white'
                       }`}
                     >
                       <div className="flex items-start gap-3">
@@ -142,14 +142,14 @@ export function ExternalLinkValidationModal({
 
             {approvedLinks.length > 0 && (
               <>
-                <h3 className="text-slate-900 mt-8 mb-4">Approved Links ({approvedLinks.length})</h3>
+                <h3 className="text-slate-900 font-medium mt-8 mb-4">Approved Links ({approvedLinks.length})</h3>
                 <div className="space-y-2">
                   {approvedLinks.map((link) => {
                     const Icon = getTypeIcon(link.type);
                     return (
-                      <div key={link.id} className="p-3 rounded-lg bg-green-50 border border-green-200">
+                      <div key={link.id} className="p-3 rounded-lg bg-emerald-50 border border-emerald-200">
                         <div className="flex items-start gap-3">
-                          <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                          <CheckCircle className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
                           <div className="flex-1 min-w-0">
                             <p className="text-sm text-slate-900 truncate">{link.title}</p>
                             <p className="text-xs text-slate-500">{link.source}</p>
@@ -168,27 +168,27 @@ export function ExternalLinkValidationModal({
             {selectedLink ? (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-slate-900 mb-4">Link Details</h3>
+                  <h3 className="text-slate-900 font-medium mb-4">Link Details</h3>
                   
                   {/* Title & Source */}
                   <div className="mb-4">
-                    <label className="text-sm text-slate-600 mb-1 block">Title</label>
+                    <label className="text-sm text-slate-500 mb-1 block">Title</label>
                     <p className="text-slate-900">{selectedLink.title}</p>
                   </div>
 
                   <div className="mb-4">
-                    <label className="text-sm text-slate-600 mb-1 block">Source</label>
+                    <label className="text-sm text-slate-500 mb-1 block">Source</label>
                     <p className="text-slate-900">{selectedLink.source}</p>
                   </div>
 
                   {/* URL */}
                   <div className="mb-4">
-                    <label className="text-sm text-slate-600 mb-1 block">URL</label>
+                    <label className="text-sm text-slate-400 mb-1 block">URL</label>
                     <a 
                       href={selectedLink.url} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="text-indigo-600 hover:text-indigo-700 text-sm break-all flex items-center gap-1"
+                      className="text-primary-400 hover:text-primary-300 text-sm break-all flex items-center gap-1"
                     >
                       <ExternalLinkIcon className="w-3 h-3 flex-shrink-0" />
                       {selectedLink.url}
@@ -197,28 +197,28 @@ export function ExternalLinkValidationModal({
 
                   {/* Type & Topic */}
                   <div className="mb-4">
-                    <label className="text-sm text-slate-600 mb-1 block">Type</label>
-                    <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm ${getTypeColor(selectedLink.type)}`}>
+                    <label className="text-sm text-slate-500 mb-1 block">Type</label>
+                    <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm capitalize ${getTypeColor(selectedLink.type)}`}>
                       {selectedLink.type}
                     </span>
                   </div>
 
                   <div className="mb-4">
-                    <label className="text-sm text-slate-600 mb-1 block">Topic</label>
+                    <label className="text-sm text-slate-500 mb-1 block">Topic</label>
                     <p className="text-slate-900">{selectedLink.topic}</p>
                   </div>
 
                   {/* Recommended For */}
                   <div className="mb-4">
-                    <label className="text-sm text-slate-600 mb-1 block">Recommended For</label>
+                    <label className="text-sm text-slate-500 mb-1 block">Recommended For</label>
                     <p className="text-slate-900">{getStudentNames(selectedLink.recommendedFor)}</p>
                   </div>
 
                   {/* AI Reasoning */}
                   <div className="mb-6">
-                    <label className="text-sm text-slate-600 mb-2 block">AI Recommendation Reason</label>
-                    <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
-                      <p className="text-sm text-slate-900">{selectedLink.aiReason}</p>
+                    <label className="text-sm text-slate-500 mb-2 block">AI Recommendation Reason</label>
+                    <div className="bg-primary-50 border border-primary-200 rounded-lg p-4">
+                      <p className="text-sm text-slate-700">{selectedLink.aiReason}</p>
                     </div>
                   </div>
 
@@ -249,11 +249,11 @@ export function ExternalLinkValidationModal({
 
                 {/* Safety Notice */}
                 <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                  <h4 className="text-amber-900 mb-2 text-sm flex items-center gap-2">
+                  <h4 className="text-amber-700 font-medium mb-2 text-sm flex items-center gap-2">
                     <AlertCircle className="w-4 h-4" />
                     Validation Guidelines
                   </h4>
-                  <ul className="space-y-1 text-sm text-amber-800">
+                  <ul className="space-y-1 text-sm text-slate-600">
                     <li>• Verify the content is age-appropriate and educationally sound</li>
                     <li>• Check that the source is reputable and trustworthy</li>
                     <li>• Ensure the link is relevant to the identified learning gaps</li>
@@ -264,7 +264,7 @@ export function ExternalLinkValidationModal({
             ) : (
               <div className="h-full flex items-center justify-center text-center">
                 <div>
-                  <ExternalLinkIcon className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                  <ExternalLinkIcon className="w-12 h-12 text-slate-400 mx-auto mb-3" />
                   <p className="text-slate-500">Select a link to review details</p>
                 </div>
               </div>

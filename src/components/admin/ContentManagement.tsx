@@ -76,25 +76,25 @@ export function ContentManagement() {
 
   const getTypeColor = (type: ModuleTemplate['type']) => {
     switch (type) {
-      case 'video': return 'bg-purple-100 text-purple-600';
-      case 'quiz': return 'bg-green-100 text-green-600';
-      case 'exercise': return 'bg-blue-100 text-blue-600';
+      case 'video': return 'text-secondary-600 bg-secondary-100 border border-secondary-200';
+      case 'quiz': return 'text-emerald-600 bg-emerald-100 border border-emerald-200';
+      case 'exercise': return 'text-primary-600 bg-primary-100 border border-primary-200';
     }
   };
 
   const getStatusColor = (status: ModuleTemplate['status']) => {
     switch (status) {
-      case 'published': return 'bg-green-100 text-green-700';
-      case 'draft': return 'bg-amber-100 text-amber-700';
-      case 'archived': return 'bg-slate-100 text-slate-600';
+      case 'published': return 'text-emerald-600 bg-emerald-100 border border-emerald-200';
+      case 'draft': return 'text-amber-600 bg-amber-100 border border-amber-200';
+      case 'archived': return 'text-slate-600 bg-slate-100 border border-slate-200';
     }
   };
 
   const getDifficultyColor = (difficulty: ModuleTemplate['difficulty']) => {
     switch (difficulty) {
-      case 'beginner': return 'bg-emerald-100 text-emerald-700';
-      case 'intermediate': return 'bg-blue-100 text-blue-700';
-      case 'advanced': return 'bg-purple-100 text-purple-700';
+      case 'beginner': return 'text-emerald-600 bg-emerald-100 border border-emerald-200';
+      case 'intermediate': return 'text-primary-600 bg-primary-100 border border-primary-200';
+      case 'advanced': return 'text-accent-600 bg-accent-100 border border-accent-200';
     }
   };
 
@@ -208,11 +208,11 @@ export function ContentManagement() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h3 className="text-lg font-semibold text-slate-900">Content Management</h3>
+          <h3 className="text-lg font-semibold text-slate-800">Content Management</h3>
           <p className="text-sm text-slate-500">Manage learning modules, templates, and educational content</p>
         </div>
         <div className="flex gap-3">
-          <button className="flex items-center gap-2 px-4 py-2 border border-slate-300 rounded-lg text-sm text-slate-700 hover:bg-slate-50 transition-colors">
+          <button className="flex items-center gap-2 px-4 py-2 border border-primary-200 rounded-xl text-sm text-slate-600 hover:bg-primary-50 transition-colors cursor-pointer">
             <Upload className="w-4 h-4" />
             Import
           </button>
@@ -221,7 +221,7 @@ export function ContentManagement() {
               setEditingModule(null);
               setIsModalOpen(true);
             }}
-            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-lg hover:from-brand-600 hover:to-brand-700 transition-all"
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-xl hover:from-primary-500 hover:to-primary-600 transition-all cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             Create Module
@@ -231,27 +231,27 @@ export function ContentManagement() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-lg p-4 shadow-sm border border-slate-200">
+        <div className="glass-card p-4">
           <p className="text-sm text-slate-500">Total Modules</p>
-          <p className="text-2xl font-bold text-slate-900">{stats.total}</p>
+          <p className="text-2xl font-bold text-slate-800">{stats.total}</p>
         </div>
-        <div className="bg-white rounded-lg p-4 shadow-sm border border-slate-200">
+        <div className="glass-card p-4">
           <div className="flex items-center gap-2">
-            <CheckCircle className="w-4 h-4 text-green-500" />
+            <CheckCircle className="w-4 h-4 text-emerald-500" />
             <p className="text-sm text-slate-500">Published</p>
           </div>
-          <p className="text-2xl font-bold text-green-600">{stats.published}</p>
+          <p className="text-2xl font-bold text-emerald-600">{stats.published}</p>
         </div>
-        <div className="bg-white rounded-lg p-4 shadow-sm border border-slate-200">
+        <div className="glass-card p-4">
           <div className="flex items-center gap-2">
             <Edit2 className="w-4 h-4 text-amber-500" />
             <p className="text-sm text-slate-500">Drafts</p>
           </div>
           <p className="text-2xl font-bold text-amber-600">{stats.draft}</p>
         </div>
-        <div className="bg-white rounded-lg p-4 shadow-sm border border-slate-200">
+        <div className="glass-card p-4">
           <div className="flex items-center gap-2">
-            <Archive className="w-4 h-4 text-slate-500" />
+            <Archive className="w-4 h-4 text-slate-400" />
             <p className="text-sm text-slate-500">Archived</p>
           </div>
           <p className="text-2xl font-bold text-slate-600">{stats.archived}</p>
@@ -259,7 +259,7 @@ export function ContentManagement() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-200">
+      <div className="glass-card p-4">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -268,14 +268,14 @@ export function ContentManagement() {
               placeholder="Search modules by title or topic..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="w-full pl-10 pr-4 py-2 bg-white border border-primary-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
           </div>
           <div className="flex gap-3">
             <select
               value={filterType}
               onChange={(e) => setFilterType(e.target.value as typeof filterType)}
-              className="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="px-3 py-2 bg-white border border-primary-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
               <option value="all">All Types</option>
               <option value="video">Videos</option>
@@ -285,7 +285,7 @@ export function ContentManagement() {
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value as typeof filterStatus)}
-              className="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="px-3 py-2 bg-white border border-primary-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
               <option value="all">All Status</option>
               <option value="published">Published</option>
@@ -297,24 +297,24 @@ export function ContentManagement() {
 
         {/* Bulk Actions */}
         {selectedModules.size > 0 && (
-          <div className="mt-4 pt-4 border-t border-slate-200 flex items-center justify-between">
-            <span className="text-sm text-slate-600">{selectedModules.size} module(s) selected</span>
+          <div className="mt-4 pt-4 border-t border-primary-100 flex items-center justify-between">
+            <span className="text-sm text-slate-500">{selectedModules.size} module(s) selected</span>
             <div className="flex gap-2">
               <button
                 onClick={() => handleBulkAction('publish')}
-                className="px-3 py-1 text-sm bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors"
+                className="px-3 py-1 text-sm text-emerald-600 bg-emerald-100 rounded-lg hover:bg-emerald-200 transition-colors cursor-pointer"
               >
                 Publish
               </button>
               <button
                 onClick={() => handleBulkAction('archive')}
-                className="px-3 py-1 text-sm bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors"
+                className="px-3 py-1 text-sm text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors cursor-pointer"
               >
                 Archive
               </button>
               <button
                 onClick={() => handleBulkAction('delete')}
-                className="px-3 py-1 text-sm bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
+                className="px-3 py-1 text-sm text-red-600 bg-red-100 rounded-lg hover:bg-red-200 transition-colors cursor-pointer"
               >
                 Delete
               </button>
@@ -324,39 +324,39 @@ export function ContentManagement() {
       </div>
 
       {/* Modules Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      <div className="glass-card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-slate-50 border-b border-slate-200">
+            <thead className="bg-primary-50 border-b border-primary-100">
               <tr>
                 <th className="px-4 py-3 text-left">
                   <input
                     type="checkbox"
                     checked={selectedModules.size === filteredModules.length && filteredModules.length > 0}
                     onChange={toggleSelectAll}
-                    className="w-4 h-4 text-brand-500 rounded focus:ring-brand-500"
+                    className="w-4 h-4 text-primary-500 rounded focus:ring-primary-500 bg-white border-primary-200"
                   />
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Module</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Type</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Difficulty</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Status</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Assigned</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Created</th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Actions</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Type</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Difficulty</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Status</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Assigned</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Created</th>
+                <th className="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-200">
+            <tbody className="divide-y divide-white/10">
               {filteredModules.map((module) => {
                 const TypeIcon = getTypeIcon(module.type);
                 return (
-                  <tr key={module.id} className="hover:bg-slate-50">
+                  <tr key={module.id} className="hover:bg-white/5 transition-colors">
                     <td className="px-4 py-4">
                       <input
                         type="checkbox"
                         checked={selectedModules.has(module.id)}
                         onChange={() => toggleSelect(module.id)}
-                        className="w-4 h-4 text-brand-500 rounded focus:ring-brand-500"
+                        className="w-4 h-4 text-primary-500 rounded focus:ring-primary-500 bg-white/10 border-white/20"
                       />
                     </td>
                     <td className="px-4 py-4">
@@ -365,8 +365,8 @@ export function ContentManagement() {
                           <TypeIcon className="w-4 h-4" />
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-slate-900">{module.title}</p>
-                          <p className="text-xs text-slate-500">{module.topic}</p>
+                          <p className="text-sm font-medium text-white">{module.title}</p>
+                          <p className="text-xs text-slate-400">{module.topic}</p>
                         </div>
                       </div>
                     </td>
@@ -387,12 +387,12 @@ export function ContentManagement() {
                     </td>
                     <td className="px-4 py-4">
                       <div className="flex items-center gap-1">
-                        <Users className="w-4 h-4 text-slate-400" />
-                        <span className="text-sm text-slate-600">{module.assignedClassrooms.length}</span>
+                        <Users className="w-4 h-4 text-slate-500" />
+                        <span className="text-sm text-slate-300">{module.assignedClassrooms.length}</span>
                       </div>
                     </td>
                     <td className="px-4 py-4">
-                      <p className="text-sm text-slate-600">
+                      <p className="text-sm text-slate-400">
                         {new Date(module.createdAt).toLocaleDateString()}
                       </p>
                     </td>
@@ -403,14 +403,14 @@ export function ContentManagement() {
                             setEditingModule(module);
                             setIsModalOpen(true);
                           }}
-                          className="p-2 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors"
+                          className="p-2 text-slate-400 hover:text-primary-400 hover:bg-primary-500/20 rounded-lg transition-colors cursor-pointer"
                           title="Edit"
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDuplicate(module)}
-                          className="p-2 text-slate-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+                          className="p-2 text-slate-400 hover:text-purple-400 hover:bg-purple-500/20 rounded-lg transition-colors cursor-pointer"
                           title="Duplicate"
                         >
                           <Copy className="w-4 h-4" />
@@ -418,7 +418,7 @@ export function ContentManagement() {
                         {module.status === 'draft' && (
                           <button
                             onClick={() => handlePublish(module.id)}
-                            className="p-2 text-slate-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                            className="p-2 text-slate-400 hover:text-emerald-400 hover:bg-emerald-500/20 rounded-lg transition-colors cursor-pointer"
                             title="Publish"
                           >
                             <CheckCircle className="w-4 h-4" />
@@ -427,7 +427,7 @@ export function ContentManagement() {
                         {module.status === 'published' && (
                           <button
                             onClick={() => handleArchive(module.id)}
-                            className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
+                            className="p-2 text-slate-400 hover:text-amber-400 hover:bg-amber-500/20 rounded-lg transition-colors cursor-pointer"
                             title="Archive"
                           >
                             <Archive className="w-4 h-4" />
@@ -435,7 +435,7 @@ export function ContentManagement() {
                         )}
                         <button
                           onClick={() => handleDelete(module.id)}
-                          className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          className="p-2 text-slate-400 hover:text-red-400 hover:bg-red-500/20 rounded-lg transition-colors cursor-pointer"
                           title="Delete"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -451,8 +451,8 @@ export function ContentManagement() {
 
         {filteredModules.length === 0 && (
           <div className="py-12 text-center">
-            <BookOpen className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-            <p className="text-slate-500">No modules found matching your criteria</p>
+            <BookOpen className="w-12 h-12 text-slate-500 mx-auto mb-4" />
+            <p className="text-slate-400">No modules found matching your criteria</p>
           </div>
         )}
       </div>
@@ -524,38 +524,41 @@ function ModuleModal({ module, classrooms, teachers, onClose, onSave }: ModuleMo
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div className="p-6 border-b border-slate-200">
-          <h3 className="text-lg font-semibold text-slate-900">
-            {module ? 'Edit Module' : 'Create New Module'}
-          </h3>
-          <p className="text-sm text-slate-500 mt-1">
-            {module ? 'Update module details and assignments' : 'Add a new learning module to the platform'}
-          </p>
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="glass-card w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-white/10">
+        <div className="relative p-6 border-b border-white/10 bg-gradient-to-r from-primary-600 to-primary-700">
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+          <div className="relative">
+            <h3 className="text-lg font-semibold text-white">
+              {module ? 'Edit Module' : 'Create New Module'}
+            </h3>
+            <p className="text-sm text-white/70 mt-1">
+              {module ? 'Update module details and assignments' : 'Add a new learning module to the platform'}
+            </p>
+          </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="p-6 space-y-6 bg-[#1A1425]">
           {/* Basic Info */}
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Title</label>
+              <label className="block text-sm font-medium text-slate-300 mb-1">Title</label>
               <input
                 type="text"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
                 placeholder="e.g., Introduction to Derivatives"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
+              <label className="block text-sm font-medium text-slate-300 mb-1">Description</label>
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
                 rows={3}
                 placeholder="Brief description of the module content..."
               />
@@ -563,11 +566,11 @@ function ModuleModal({ module, classrooms, teachers, onClose, onSave }: ModuleMo
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Type</label>
+                <label className="block text-sm font-medium text-slate-300 mb-1">Type</label>
                 <select
                   value={formData.type}
                   onChange={(e) => setFormData({ ...formData, type: e.target.value as ModuleTemplate['type'] })}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
                 >
                   <option value="video">Video</option>
                   <option value="quiz">Quiz</option>
@@ -575,12 +578,12 @@ function ModuleModal({ module, classrooms, teachers, onClose, onSave }: ModuleMo
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Topic</label>
+                <label className="block text-sm font-medium text-slate-300 mb-1">Topic</label>
                 <input
                   type="text"
                   value={formData.topic}
                   onChange={(e) => setFormData({ ...formData, topic: e.target.value })}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
                   placeholder="e.g., Calculus"
                   required
                 />
@@ -589,11 +592,11 @@ function ModuleModal({ module, classrooms, teachers, onClose, onSave }: ModuleMo
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Difficulty</label>
+                <label className="block text-sm font-medium text-slate-300 mb-1">Difficulty</label>
                 <select
                   value={formData.difficulty}
                   onChange={(e) => setFormData({ ...formData, difficulty: e.target.value as ModuleTemplate['difficulty'] })}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
                 >
                   <option value="beginner">Beginner</option>
                   <option value="intermediate">Intermediate</option>
@@ -601,12 +604,12 @@ function ModuleModal({ module, classrooms, teachers, onClose, onSave }: ModuleMo
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Duration</label>
+                <label className="block text-sm font-medium text-slate-300 mb-1">Duration</label>
                 <input
                   type="text"
                   value={formData.duration}
                   onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
                   placeholder="e.g., 15 min"
                 />
               </div>
@@ -615,34 +618,34 @@ function ModuleModal({ module, classrooms, teachers, onClose, onSave }: ModuleMo
 
           {/* Classroom Assignment */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Assign to Classrooms</label>
-            <div className="border border-slate-200 rounded-lg p-4 space-y-2 max-h-40 overflow-y-auto">
+            <label className="block text-sm font-medium text-slate-300 mb-2">Assign to Classrooms</label>
+            <div className="border border-white/10 rounded-xl p-4 space-y-2 max-h-40 overflow-y-auto bg-white/5">
               {classrooms.map((classroom) => (
-                <label key={classroom.id} className="flex items-center gap-3 cursor-pointer hover:bg-slate-50 p-2 rounded-lg">
+                <label key={classroom.id} className="flex items-center gap-3 cursor-pointer hover:bg-white/5 p-2 rounded-lg">
                   <input
                     type="checkbox"
                     checked={formData.assignedClassrooms.includes(classroom.id)}
                     onChange={() => toggleClassroom(classroom.id)}
-                    className="w-4 h-4 text-brand-500 rounded focus:ring-brand-500"
+                    className="w-4 h-4 text-primary-500 rounded focus:ring-primary-500 bg-white/10 border-white/20"
                   />
-                  <span className="text-sm text-slate-700">{classroom.name} - {classroom.section}</span>
+                  <span className="text-sm text-slate-300">{classroom.name} - {classroom.section}</span>
                 </label>
               ))}
             </div>
           </div>
 
           {/* Actions */}
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">
+          <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors"
+              className="px-4 py-2 border border-white/10 text-slate-300 rounded-xl hover:bg-white/5 transition-colors cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-lg hover:from-brand-600 hover:to-brand-700 transition-all"
+              className="px-4 py-2 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-xl hover:from-primary-500 hover:to-primary-600 transition-all cursor-pointer"
             >
               {module ? 'Save Changes' : 'Create Module'}
             </button>

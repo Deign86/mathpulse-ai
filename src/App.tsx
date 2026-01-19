@@ -58,10 +58,17 @@ function AppContent() {
   // Show loading state while checking auth
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-500 mx-auto mb-4"></div>
-          <p className="text-slate-600">Loading...</p>
+      <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
+        {/* Animated Background */}
+        <div className="blob blob-primary w-[500px] h-[500px] absolute -top-32 -left-32"></div>
+        <div className="blob blob-accent w-[400px] h-[400px] absolute -bottom-24 -right-24"></div>
+        
+        <div className="text-center relative z-10">
+          <div className="relative">
+            <div className="absolute inset-0 rounded-full bg-primary-500/20 animate-ping"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-2 border-primary-200 border-t-primary-500 mx-auto"></div>
+          </div>
+          <p className="text-slate-600 mt-4 font-medium">Loading MathPulse AI...</p>
         </div>
       </div>
     );

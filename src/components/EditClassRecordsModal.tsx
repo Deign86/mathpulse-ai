@@ -90,7 +90,7 @@ export function EditClassRecordsModal({ isOpen, onClose, students, onSaveChanges
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       {/* Delete Confirmation Dialog */}
       <ConfirmDialog
         open={deleteConfirmOpen}
@@ -113,12 +113,12 @@ export function EditClassRecordsModal({ isOpen, onClose, students, onSaveChanges
         onConfirm={confirmClose}
       />
 
-      <div className="bg-white rounded-2xl max-w-7xl w-full max-h-[90vh] flex flex-col shadow-2xl">
+      <div className="bg-white border border-slate-200 rounded-2xl max-w-7xl w-full max-h-[90vh] flex flex-col shadow-2xl">
         {/* Header */}
-        <div className="bg-gradient-to-r from-brand-500 to-brand-900 p-6 rounded-t-2xl flex items-center justify-between">
+        <div className="bg-gradient-to-r from-primary-600 to-primary-700 p-6 rounded-t-2xl flex items-center justify-between">
           <div>
-            <h2 className="text-white mb-1">Edit Class Records</h2>
-            <p className="text-brand-100 text-sm">Review and correct AI-analyzed data • {editedStudents.length} students</p>
+            <h2 className="text-white mb-1 text-xl font-semibold">Edit Class Records</h2>
+            <p className="text-white/90 text-sm">Review and correct AI-analyzed data • {editedStudents.length} students</p>
           </div>
           <button
             onClick={handleCancel}
@@ -133,19 +133,19 @@ export function EditClassRecordsModal({ isOpen, onClose, students, onSaveChanges
           <div className="bg-amber-50 border-l-4 border-amber-500 p-4 flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
             <div>
-              <p className="text-amber-900">You have unsaved changes</p>
-              <p className="text-sm text-amber-700 mt-1">Don't forget to save your changes before closing.</p>
+              <p className="text-amber-700 font-medium">You have unsaved changes</p>
+              <p className="text-sm text-amber-600 mt-1">Don't forget to save your changes before closing.</p>
             </div>
           </div>
         )}
 
         {/* Success Confirmation */}
         {showConfirmation && (
-          <div className="bg-green-50 border-l-4 border-green-500 p-4 flex items-start gap-3">
-            <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+          <div className="bg-emerald-50 border-l-4 border-emerald-500 p-4 flex items-start gap-3">
+            <CheckCircle className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
             <div>
-              <p className="text-green-900">Changes saved successfully!</p>
-              <p className="text-sm text-green-700 mt-1">AI will re-analyze the updated data.</p>
+              <p className="text-emerald-700 font-medium">Changes saved successfully!</p>
+              <p className="text-sm text-emerald-600 mt-1">AI will re-analyze the updated data.</p>
             </div>
           </div>
         )}
@@ -154,9 +154,9 @@ export function EditClassRecordsModal({ isOpen, onClose, students, onSaveChanges
         <div className="flex-1 overflow-auto p-6">
           <div className="bg-slate-50 rounded-xl p-4 mb-4 border border-slate-200">
             <div className="flex items-start gap-3">
-              <Edit2 className="w-5 h-5 text-brand-600 flex-shrink-0 mt-0.5" />
+              <Edit2 className="w-5 h-5 text-primary-500 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-slate-900 mb-1">How to edit records</p>
+                <p className="text-slate-900 font-medium mb-1">How to edit records</p>
                 <ul className="text-sm text-slate-600 space-y-1">
                   <li>• Click on any cell to edit student information directly</li>
                   <li>• Use the dropdown menus to change risk levels and classroom assignments</li>
@@ -170,17 +170,17 @@ export function EditClassRecordsModal({ isOpen, onClose, students, onSaveChanges
 
           <div className="overflow-x-auto border border-slate-200 rounded-xl">
             <table className="w-full">
-              <thead className="bg-slate-100 border-b border-slate-200">
+              <thead className="bg-slate-50 border-b border-slate-200">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs text-slate-600 uppercase tracking-wider">Student Name</th>
-                  <th className="px-4 py-3 text-left text-xs text-slate-600 uppercase tracking-wider">Risk Level</th>
-                  <th className="px-4 py-3 text-left text-xs text-slate-600 uppercase tracking-wider">Quiz Average (%)</th>
-                  <th className="px-4 py-3 text-left text-xs text-slate-600 uppercase tracking-wider">Engagement (%)</th>
-                  <th className="px-4 py-3 text-left text-xs text-slate-600 uppercase tracking-wider">Weakest Topic</th>
-                  <th className="px-4 py-3 text-left text-xs text-slate-600 uppercase tracking-wider">Actions</th>
+                  <th className="px-4 py-3 text-left text-xs text-slate-600 uppercase tracking-wider font-semibold">Student Name</th>
+                  <th className="px-4 py-3 text-left text-xs text-slate-600 uppercase tracking-wider font-semibold">Risk Level</th>
+                  <th className="px-4 py-3 text-left text-xs text-slate-600 uppercase tracking-wider font-semibold">Quiz Average (%)</th>
+                  <th className="px-4 py-3 text-left text-xs text-slate-600 uppercase tracking-wider font-semibold">Engagement (%)</th>
+                  <th className="px-4 py-3 text-left text-xs text-slate-600 uppercase tracking-wider font-semibold">Weakest Topic</th>
+                  <th className="px-4 py-3 text-left text-xs text-slate-600 uppercase tracking-wider font-semibold">Actions</th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-slate-200">
+              <tbody className="divide-y divide-slate-200 bg-white">
                 {editedStudents.map((student) => (
                   <tr key={student.id} className="hover:bg-slate-50">
                     <td className="px-4 py-3">
@@ -188,14 +188,14 @@ export function EditClassRecordsModal({ isOpen, onClose, students, onSaveChanges
                         type="text"
                         value={student.name}
                         onChange={(e) => handleFieldChange(student.id, 'name', e.target.value)}
-                        className="w-full px-3 py-1.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm"
+                        className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm text-slate-900"
                       />
                     </td>
                     <td className="px-4 py-3">
                       <select
                         value={student.riskLevel}
                         onChange={(e) => handleFieldChange(student.id, 'riskLevel', e.target.value as RiskLevel)}
-                        className="w-full px-3 py-1.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm"
+                        className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm text-slate-900"
                       >
                         <option value={RiskLevel.HIGH}>High</option>
                         <option value={RiskLevel.MEDIUM}>Medium</option>
@@ -209,7 +209,7 @@ export function EditClassRecordsModal({ isOpen, onClose, students, onSaveChanges
                         max="100"
                         value={student.avgQuizScore}
                         onChange={(e) => handleFieldChange(student.id, 'avgQuizScore', parseInt(e.target.value) || 0)}
-                        className="w-full px-3 py-1.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm"
+                        className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm text-slate-900"
                       />
                     </td>
                     <td className="px-4 py-3">
@@ -219,7 +219,7 @@ export function EditClassRecordsModal({ isOpen, onClose, students, onSaveChanges
                         max="100"
                         value={student.engagementScore}
                         onChange={(e) => handleFieldChange(student.id, 'engagementScore', parseInt(e.target.value) || 0)}
-                        className="w-full px-3 py-1.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm"
+                        className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm text-slate-900"
                       />
                     </td>
                     <td className="px-4 py-3">
@@ -227,13 +227,13 @@ export function EditClassRecordsModal({ isOpen, onClose, students, onSaveChanges
                         type="text"
                         value={student.weakestTopic}
                         onChange={(e) => handleFieldChange(student.id, 'weakestTopic', e.target.value)}
-                        className="w-full px-3 py-1.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm"
+                        className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm text-slate-900"
                       />
                     </td>
                     <td className="px-4 py-3">
                       <button
                         onClick={() => handleDeleteStudent(student.id)}
-                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
                         title="Delete student"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -248,7 +248,7 @@ export function EditClassRecordsModal({ isOpen, onClose, students, onSaveChanges
           {/* Add Student Button */}
           <button
             onClick={handleAddStudent}
-            className="mt-4 w-full py-3 border-2 border-dashed border-brand-300 text-brand-600 rounded-lg hover:bg-brand-50 hover:border-brand-500 transition-all flex items-center justify-center gap-2"
+            className="mt-4 w-full py-3 border-2 border-dashed border-primary-500/30 text-primary-400 rounded-lg hover:bg-primary-500/10 hover:border-primary-500/50 transition-all flex items-center justify-center gap-2"
           >
             <Plus className="w-5 h-5" />
             Add New Student
@@ -257,13 +257,13 @@ export function EditClassRecordsModal({ isOpen, onClose, students, onSaveChanges
 
         {/* Footer */}
         <div className="bg-slate-50 px-6 py-4 border-t border-slate-200 rounded-b-2xl flex items-center justify-between">
-          <p className="text-sm text-slate-600">
+          <p className="text-sm text-slate-500">
             {editedStudents.length} student{editedStudents.length !== 1 ? 's' : ''} in records
           </p>
           <div className="flex gap-3">
             <button
               onClick={handleCancel}
-              className="px-6 py-2 text-slate-700 hover:bg-slate-200 rounded-lg transition-colors"
+              className="px-6 py-2 text-slate-600 hover:bg-slate-200 rounded-lg transition-colors"
             >
               Cancel
             </button>
@@ -272,7 +272,7 @@ export function EditClassRecordsModal({ isOpen, onClose, students, onSaveChanges
               disabled={!hasChanges}
               className={`px-6 py-2 rounded-lg transition-all flex items-center gap-2 ${
                 hasChanges
-                  ? 'bg-brand-600 text-white hover:bg-brand-700 shadow-md hover:shadow-lg'
+                  ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white hover:from-primary-500 hover:to-primary-600 shadow-md hover:shadow-lg'
                   : 'bg-slate-200 text-slate-400 cursor-not-allowed'
               }`}
             >

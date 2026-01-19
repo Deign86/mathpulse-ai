@@ -612,29 +612,32 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
   const studentsAtRisk = students.filter(s => s.riskLevel === RiskLevel.HIGH).length;
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
+    <div className="min-h-screen flex">
       {/* Left Sidebar - Student List */}
-      <div className="w-80 bg-white border-r border-slate-200 flex flex-col">
+      <div className="w-80 bg-white/90 backdrop-blur-xl border-r border-primary-100 flex flex-col">
         {/* Sidebar Header */}
-        <div className="p-4 border-b border-slate-200">
+        <div className="p-4 border-b border-white/10">
           <div className="flex items-center gap-2 mb-4">
-            <div className="bg-gradient-to-br from-brand-500 to-brand-900 p-2 rounded-lg">
-              <BrainCircuit className="w-6 h-6 text-white" />
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary-500 to-accent-500 rounded-lg blur opacity-50"></div>
+              <div className="relative bg-gradient-to-br from-primary-500 to-primary-600 p-2 rounded-lg shadow-md">
+                <BrainCircuit className="w-6 h-6 text-white" />
+              </div>
             </div>
-            <span className="text-sky-900">MathPulse AI</span>
+            <span className="text-gradient font-bold text-lg">MathPulse AI</span>
           </div>
 
           {/* Classroom Selector */}
           <button
             onClick={() => setIsClassroomOverviewModalOpen(true)}
-            className="w-full mb-4 px-4 py-3 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-lg hover:from-brand-600 hover:to-brand-700 transition-all shadow-md hover:shadow-lg group"
+            className="w-full mb-4 px-4 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-xl hover:from-primary-500 hover:to-primary-600 transition-all shadow-lg hover:shadow-primary-500/25 group cursor-pointer"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <BookOpen className="w-4 h-4" />
                 <div className="text-left">
-                  <p className="text-sm text-white/90">Current Classroom</p>
-                  <p className="text-white">{currentClassroom?.section}</p>
+                  <p className="text-sm text-white/70">Current Classroom</p>
+                  <p className="text-white font-medium">{currentClassroom?.section}</p>
                 </div>
               </div>
               <ChevronDown className="w-4 h-4 group-hover:translate-y-0.5 transition-transform" />
@@ -649,7 +652,7 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
               placeholder="Search students..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="w-full pl-10 pr-4 py-2.5 bg-white border border-primary-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
             />
           </div>
         </div>
@@ -660,8 +663,8 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
             <div
               key={student.id}
               onClick={() => setSelectedStudent(student)}
-              className={`border-l-4 bg-white rounded-lg p-3 cursor-pointer transition-all hover:shadow-md ${
-                selectedStudent?.id === student.id ? 'shadow-lg ring-2 ring-brand-500' : 'shadow-sm'
+              className={`border-l-4 bg-white backdrop-blur-sm rounded-xl p-3 cursor-pointer transition-all hover:shadow-md hover:-translate-y-0.5 ${
+                selectedStudent?.id === student.id ? 'ring-2 ring-primary-500 shadow-lg' : 'border border-primary-100'
               }`}
               style={{ borderLeftColor: getRiskColor(student.riskLevel) }}
             >
@@ -669,14 +672,14 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
                 <img
                   src={student.avatar}
                   alt={student.name}
-                  className="w-10 h-10 rounded-full bg-slate-200"
+                  className="w-10 h-10 rounded-full bg-slate-200 ring-2 ring-primary-100"
                 />
                 <div className="flex-1 min-w-0">
-                  <p className="text-slate-900 truncate">{student.name}</p>
+                  <p className="text-slate-800 font-medium truncate">{student.name}</p>
                   <p className="text-xs text-slate-500 mt-1">Avg Score: {student.avgQuizScore}%</p>
                   
                   {/* Mini Progress Bar */}
-                  <div className="mt-2 bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                  <div className="mt-2 bg-white/10 rounded-full h-1.5 overflow-hidden">
                     <div
                       className="h-full rounded-full transition-all"
                       style={{
@@ -695,16 +698,16 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col">
         {/* Header */}
-        <header className="bg-white border-b border-slate-200 px-6 py-4">
+        <header className="bg-white/80 backdrop-blur-xl border-b border-primary-100 px-6 py-4">
           <div className="flex items-center justify-between">
             {/* Navigation Tabs */}
-            <nav className="flex gap-1">
+            <nav className="flex gap-1 p-1 bg-primary-50 rounded-xl border border-primary-100">
               <button
                 onClick={() => setActiveTab('dashboard')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all cursor-pointer ${
                   activeTab === 'dashboard'
-                    ? 'bg-brand-500 text-white'
-                    : 'text-slate-600 hover:bg-slate-100'
+                    ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-md'
+                    : 'text-slate-600 hover:bg-white hover:text-primary-600'
                 }`}
               >
                 <LayoutDashboard className="w-4 h-4" />
@@ -712,10 +715,10 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
               </button>
               <button
                 onClick={() => setActiveTab('analytics')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all cursor-pointer ${
                   activeTab === 'analytics'
-                    ? 'bg-brand-500 text-white'
-                    : 'text-slate-600 hover:bg-slate-100'
+                    ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-md'
+                    : 'text-slate-600 hover:bg-white hover:text-primary-600'
                 }`}
               >
                 <BarChart3 className="w-4 h-4" />
@@ -723,10 +726,10 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
               </button>
               <button
                 onClick={() => setActiveTab('import')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all cursor-pointer ${
                   activeTab === 'import'
-                    ? 'bg-brand-500 text-white'
-                    : 'text-slate-600 hover:bg-slate-100'
+                    ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-md'
+                    : 'text-slate-600 hover:bg-white hover:text-primary-600'
                 }`}
               >
                 <Upload className="w-4 h-4" />
@@ -737,21 +740,21 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
             {/* Profile */}
             <div className="flex items-center gap-3">
               <div className="text-right">
-                <p className="text-sm text-slate-900">{teacherName}</p>
+                <p className="text-sm text-slate-800 font-medium">{teacherName}</p>
                 <p className="text-xs text-slate-500">Mathematics Teacher</p>
               </div>
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-brand-500 to-brand-900 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center ring-2 ring-primary-200">
                 <User className="w-5 h-5 text-white" />
               </div>
               <button
                 onClick={() => setIsProfileModalOpen(true)}
-                className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                className="p-2 text-slate-500 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors cursor-pointer"
               >
                 <User className="w-5 h-5" />
               </button>
               <button
                 onClick={onLogout}
-                className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                className="p-2 text-slate-500 hover:text-accent-600 hover:bg-accent-50 rounded-lg transition-colors cursor-pointer"
               >
                 <LogOut className="w-5 h-5" />
               </button>
@@ -764,17 +767,18 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
           {activeTab === 'dashboard' && !selectedStudent && (
             <div className="max-w-6xl mx-auto space-y-6">
               {/* Daily AI Insight Banner */}
-              <div className="bg-gradient-to-r from-brand-500 via-sky-500 to-brand-600 rounded-xl p-6 text-white shadow-lg">
-                <div className="flex items-start gap-4">
-                  <div className="bg-white/20 p-3 rounded-lg">
-                    <Sparkles className="w-6 h-6" />
+              <div className="relative overflow-hidden bg-gradient-to-r from-primary-500 via-primary-600 to-secondary-500 rounded-2xl p-6 text-white shadow-lg">
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:40px_40px]"></div>
+                <div className="relative flex items-start gap-4">
+                  <div className="bg-white/20 p-3 rounded-xl">
+                    <Sparkles className="w-6 h-6 text-white" />
                   </div>
                   <div className="flex-1">
-                    <h2 className="text-white mb-2">Daily AI Insight</h2>
+                    <h2 className="text-white font-semibold text-lg mb-2">Daily AI Insight</h2>
                     {isLoadingInsight ? (
                       <div className="flex items-center gap-2">
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        <span className="text-white/90">Analyzing class trends...</span>
+                        <Loader2 className="w-4 h-4 animate-spin text-white/80" />
+                        <span className="text-white/80">Analyzing class trends...</span>
                       </div>
                     ) : dailyInsight ? (
                       <div className="space-y-3">
@@ -783,8 +787,8 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
                         {dailyInsight.trends.length > 0 && (
                           <div className="flex flex-wrap gap-2 mt-2">
                             {dailyInsight.trends.map((trend, idx) => (
-                              <span key={idx} className={`px-2 py-1 rounded text-xs ${
-                                trend.trend === 'up' ? 'bg-emerald-500/30' : 'bg-amber-500/30'
+                              <span key={idx} className={`px-3 py-1 rounded-lg text-xs font-medium ${
+                                trend.trend === 'up' ? 'bg-emerald-400/20 text-emerald-100' : 'bg-amber-400/20 text-amber-100'
                               }`}>
                                 {trend.metric}: {trend.value} {trend.trend === 'up' ? '↑' : '↓'}
                               </span>
@@ -794,12 +798,12 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
                         
                         {dailyInsight.focusTopic && (
                           <p className="text-white/80 text-sm">
-                            <strong>Focus Topic:</strong> {dailyInsight.focusTopic}
+                            <strong className="text-white">Focus Topic:</strong> {dailyInsight.focusTopic}
                           </p>
                         )}
                       </div>
                     ) : (
-                      <p className="text-white/90">
+                      <p className="text-white/80">
                         No insights available. Add student data to enable AI analysis.
                       </p>
                     )}
@@ -810,22 +814,24 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
               {/* Two Column Layout */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Live Classroom Pulse */}
-                <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+                <div className="glass-card p-6">
                   <div className="flex items-center gap-2 mb-4">
-                    <Activity className="w-5 h-5 text-brand-500" />
-                    <h3 className="text-slate-900">Live Classroom Pulse</h3>
+                    <div className="p-2 bg-accent-100 rounded-lg">
+                      <Activity className="w-5 h-5 text-accent-500" />
+                    </div>
+                    <h3 className="text-slate-800 font-semibold">Live Classroom Pulse</h3>
                   </div>
                   <div className="space-y-3">
                     {activities.map((activity) => (
-                      <div key={activity.id} className="flex items-start gap-3 p-3 bg-slate-50 rounded-lg">
-                        <div className="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center flex-shrink-0">
-                          <Activity className="w-4 h-4 text-brand-600" />
+                      <div key={activity.id} className="flex items-start gap-3 p-3 bg-primary-50/50 rounded-xl border border-primary-100 hover:border-primary-300 transition-colors cursor-pointer">
+                        <div className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
+                          <Activity className="w-4 h-4 text-primary-500" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm text-slate-900">
-                            <span className="text-brand-600">{activity.studentName}</span> {activity.action}
+                          <p className="text-sm text-slate-700">
+                            <span className="text-primary-600 font-medium">{activity.studentName}</span> {activity.action}
                           </p>
-                          <p className="text-xs text-slate-500 mt-1">{activity.timestamp}</p>
+                          <p className="text-xs text-slate-400 mt-1">{activity.timestamp}</p>
                         </div>
                       </div>
                     ))}
@@ -836,14 +842,14 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
                 <div className="space-y-4">
                   <button 
                     onClick={() => setIsExternalLinkModalOpen(true)}
-                    className="w-full bg-white rounded-xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition-all text-left group relative"
+                    className="w-full glass-card p-6 hover:shadow-md hover:-translate-y-0.5 transition-all text-left group relative cursor-pointer"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="bg-indigo-100 p-3 rounded-lg group-hover:bg-indigo-500 transition-colors">
-                        <Shield className="w-6 h-6 text-indigo-600 group-hover:text-white" />
+                      <div className="bg-indigo-100 p-3 rounded-xl group-hover:bg-indigo-500 transition-colors">
+                        <Shield className="w-6 h-6 text-indigo-500 group-hover:text-white" />
                       </div>
                       <div className="flex-1">
-                        <h3 className="text-slate-900 mb-1">Validate AI Links</h3>
+                        <h3 className="text-slate-800 font-semibold mb-1">Validate AI Links</h3>
                         <p className="text-sm text-slate-500">Review external resources before students access them</p>
                       </div>
                       {pendingLinksCount > 0 && (
@@ -857,14 +863,14 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
 
                   <button 
                     onClick={() => setIsAnnouncementModalOpen(true)}
-                    className="w-full bg-white rounded-xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition-all text-left group"
+                    className="w-full glass-card p-6 hover:shadow-md hover:-translate-y-0.5 transition-all text-left group cursor-pointer"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="bg-amber-100 p-3 rounded-lg group-hover:bg-amber-500 transition-colors">
-                        <Megaphone className="w-6 h-6 text-amber-600 group-hover:text-white" />
+                      <div className="bg-accent-100 p-3 rounded-xl group-hover:bg-accent-500 transition-colors">
+                        <Megaphone className="w-6 h-6 text-accent-500 group-hover:text-white" />
                       </div>
                       <div className="flex-1">
-                        <h3 className="text-slate-900 mb-1">Announcements</h3>
+                        <h3 className="text-slate-800 font-semibold mb-1">Announcements</h3>
                         <p className="text-sm text-slate-500">Send updates to class or individual students</p>
                       </div>
                       <ChevronRight className="w-5 h-5 text-slate-400" />
@@ -878,25 +884,25 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
           {activeTab === 'dashboard' && selectedStudent && (
             <div className="max-w-6xl mx-auto space-y-6">
               {/* Student Header */}
-              <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+              <div className="glass-card p-6">
                 <div className="flex items-center gap-4">
                   <img
                     src={selectedStudent.avatar}
                     alt={selectedStudent.name}
-                    className="w-16 h-16 rounded-full bg-slate-200"
+                    className="w-16 h-16 rounded-full bg-slate-200 ring-4 ring-primary-200"
                   />
                   <div className="flex-1">
-                    <h2 className="text-slate-900">{selectedStudent.name}</h2>
+                    <h2 className="text-slate-800 font-semibold text-xl">{selectedStudent.name}</h2>
                     <div className="flex items-center gap-4 mt-2">
-                      <span className={`px-3 py-1 rounded-full text-sm text-white`} style={{ backgroundColor: getRiskColor(selectedStudent.riskLevel) }}>
+                      <span className="px-3 py-1 rounded-full text-sm text-white font-medium" style={{ backgroundColor: getRiskColor(selectedStudent.riskLevel) }}>
                         {selectedStudent.riskLevel} Risk
                       </span>
-                      <span className="text-sm text-slate-600">Weakest: {selectedStudent.weakestTopic}</span>
+                      <span className="text-sm text-slate-400">Weakest: <span className="text-primary-400">{selectedStudent.weakestTopic}</span></span>
                     </div>
                   </div>
                   <button
                     onClick={() => setSelectedStudent(null)}
-                    className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                    className="px-4 py-2 text-primary-600 hover:text-primary-800 hover:bg-primary-50 rounded-xl transition-colors cursor-pointer font-medium"
                   >
                     Back to Overview
                   </button>
@@ -904,22 +910,27 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
               </div>
 
               {/* AI Analysis */}
-              <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-                <h3 className="text-slate-900 mb-4">AI Analysis</h3>
+              <div className="glass-card p-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="p-2 bg-primary-500/20 rounded-lg">
+                    <Sparkles className="w-5 h-5 text-primary-500" />
+                  </div>
+                  <h3 className="text-slate-800 font-semibold">AI Analysis</h3>
+                </div>
                 {isLoadingInterventionPlan ? (
                   <div className="flex items-center justify-center py-8">
-                    <Loader2 className="w-6 h-6 animate-spin text-brand-500 mr-2" />
-                    <span className="text-slate-600">Analyzing student performance...</span>
+                    <Loader2 className="w-6 h-6 animate-spin text-primary-400 mr-2" />
+                    <span className="text-slate-400">Analyzing student performance...</span>
                   </div>
                 ) : interventionPlan ? (
-                  <div className={`border-l-4 p-4 rounded ${
+                  <div className={`border-l-4 p-4 rounded-xl ${
                     selectedStudent.riskLevel === RiskLevel.HIGH 
                       ? 'bg-red-50 border-red-500' 
                       : selectedStudent.riskLevel === RiskLevel.MEDIUM 
                         ? 'bg-amber-50 border-amber-500' 
                         : 'bg-emerald-50 border-emerald-500'
                   }`}>
-                    <p className="text-slate-900 mb-3">{interventionPlan.analysis.core_issue}</p>
+                    <p className="text-slate-700 mb-3 font-medium">{interventionPlan.analysis.core_issue}</p>
                     <div className="space-y-1">
                       {interventionPlan.analysis.gaps.map((gap, index) => (
                         <p key={index} className="text-sm text-slate-600">• {gap}</p>
@@ -932,17 +943,17 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
               </div>
 
               {/* AI Remedial Path - Timeline Visualization */}
-              <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-                <h3 className="text-slate-900 mb-6">AI-Generated Remedial Path</h3>
+              <div className="glass-card p-6">
+                <h3 className="text-slate-800 font-semibold mb-6">AI-Generated Remedial Path</h3>
                 {isLoadingInterventionPlan ? (
                   <div className="flex items-center justify-center py-12">
-                    <Loader2 className="w-6 h-6 animate-spin text-brand-500 mr-2" />
-                    <span className="text-slate-600">Generating personalized learning path...</span>
+                    <Loader2 className="w-6 h-6 animate-spin text-primary-400 mr-2" />
+                    <span className="text-slate-400">Generating personalized learning path...</span>
                   </div>
                 ) : interventionPlan ? (
                   <div className="relative">
                     {/* Timeline Line */}
-                    <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-brand-500 to-brand-900"></div>
+                    <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary-500 to-accent-500"></div>
                     
                     <div className="space-y-6">
                       {interventionPlan.remedial_path.map((step) => {
@@ -950,16 +961,16 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
                         return (
                           <div key={step.step} className="relative flex items-start gap-4 pl-14">
                             {/* Timeline Node */}
-                            <div className="absolute left-0 w-12 h-12 bg-brand-500 rounded-full flex items-center justify-center text-white shadow-lg">
+                            <div className="absolute left-0 w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-700 rounded-full flex items-center justify-center text-white shadow-lg shadow-primary-500/30 font-semibold">
                               {step.step}
                             </div>
                             
                             {/* Content Card */}
-                            <div className="flex-1 bg-slate-50 rounded-lg p-4 border-2 border-slate-200 hover:border-brand-500 transition-colors">
+                            <div className="flex-1 bg-slate-50 rounded-xl p-4 border border-slate-200 hover:border-primary-400 hover:bg-white hover:shadow-md transition-all cursor-pointer">
                               <div className="flex items-center gap-3">
-                                <Icon className="w-5 h-5 text-brand-600" />
+                                <Icon className="w-5 h-5 text-primary-500" />
                                 <div>
-                                  <p className="text-slate-900">{step.topic}</p>
+                                  <p className="text-slate-800 font-medium">{step.topic}</p>
                                   <p className="text-xs text-slate-500 mt-1 capitalize">{step.activityType}</p>
                                 </div>
                               </div>
@@ -975,25 +986,25 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
               </div>
 
               {/* Recommended Strategies */}
-              <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-                <h3 className="text-slate-900 mb-4">Recommended Teaching Strategies</h3>
+              <div className="glass-card p-6">
+                <h3 className="text-slate-800 font-semibold mb-4">Recommended Teaching Strategies</h3>
                 {isLoadingInterventionPlan ? (
                   <div className="flex items-center justify-center py-8">
-                    <Loader2 className="w-4 h-4 animate-spin text-brand-500 mr-2" />
-                    <span className="text-slate-600">Generating recommendations...</span>
+                    <Loader2 className="w-4 h-4 animate-spin text-primary-400 mr-2" />
+                    <span className="text-slate-400">Generating recommendations...</span>
                   </div>
                 ) : interventionPlan ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {interventionPlan.strategies.map((strategy, index) => {
                       const Icon = strategy.icon === 'calendar' ? Calendar : strategy.icon === 'users' ? Users : strategy.icon === 'trophy' ? Trophy : Bell;
                       return (
-                        <div key={index} className="bg-slate-50 rounded-lg p-4 border-2 border-slate-200 hover:border-brand-500 transition-colors cursor-pointer group">
+                        <div key={index} className="bg-slate-50 rounded-xl p-4 border border-slate-200 hover:border-primary-400 hover:bg-white hover:shadow-md transition-all cursor-pointer group">
                           <div className="flex items-start gap-3">
-                            <div className="bg-white p-2 rounded-lg group-hover:bg-brand-500 transition-colors">
-                              <Icon className="w-5 h-5 text-brand-600 group-hover:text-white" />
+                            <div className="bg-primary-100 p-2 rounded-lg group-hover:bg-primary-500 transition-colors">
+                              <Icon className="w-5 h-5 text-primary-500 group-hover:text-white" />
                             </div>
                             <div className="flex-1">
-                              <p className="text-slate-900 mb-1">{strategy.title}</p>
+                              <p className="text-slate-800 font-medium mb-1">{strategy.title}</p>
                               <p className="text-sm text-slate-600">{strategy.action}</p>
                             </div>
                           </div>
@@ -1007,19 +1018,19 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
               </div>
 
               {/* Export Printed Materials - Student Specific */}
-              <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-                <h3 className="text-slate-900 mb-4">Student Resources</h3>
+              <div className="glass-card p-6">
+                <h3 className="text-slate-800 font-semibold mb-4">Student Resources</h3>
                 <button 
                   onClick={() => setIsExportModalOpen(true)}
-                  className="w-full bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-xl p-6 hover:from-purple-600 hover:to-purple-700 transition-all text-left group shadow-md hover:shadow-lg"
+                  className="w-full bg-gradient-to-r from-primary-600 to-accent-600 text-white rounded-xl p-6 hover:from-primary-500 hover:to-accent-500 transition-all text-left group shadow-lg shadow-primary-500/20 cursor-pointer"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="bg-white/20 p-3 rounded-lg">
+                    <div className="bg-white/20 p-3 rounded-xl">
                       <Printer className="w-6 h-6 text-white" />
                     </div>
                     <div className="flex-1">
-                      <h4 className="text-white mb-1">Export Printed Materials</h4>
-                      <p className="text-sm text-white/90">Generate personalized worksheets and study guides for {selectedStudent.name}</p>
+                      <h4 className="text-white font-medium mb-1">Export Printed Materials</h4>
+                      <p className="text-sm text-white/80">Generate personalized worksheets and study guides for {selectedStudent.name}</p>
                     </div>
                     <ChevronRight className="w-5 h-5 text-white/80 group-hover:translate-x-1 transition-transform" />
                   </div>
@@ -1031,11 +1042,11 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
           {activeTab === 'analytics' && (
             <div className="max-w-6xl mx-auto space-y-6">
               {/* Date Range Filter */}
-              <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-200">
+              <div className="glass-card p-4">
                 <div className="flex items-center justify-between flex-wrap gap-4">
                   <div className="flex items-center gap-2">
-                    <Calendar className="w-5 h-5 text-slate-500" />
-                    <span className="text-slate-700 font-medium">Time Period:</span>
+                    <Calendar className="w-5 h-5 text-primary-500" />
+                    <span className="text-slate-800 font-medium">Time Period:</span>
                   </div>
                   <div className="flex gap-2">
                     {[
@@ -1047,10 +1058,10 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
                       <button
                         key={option.value}
                         onClick={() => setAnalyticsDateRange(option.value as typeof analyticsDateRange)}
-                        className={`px-4 py-2 rounded-lg text-sm transition-all ${
+                        className={`px-4 py-2 rounded-xl text-sm transition-all cursor-pointer ${
                           analyticsDateRange === option.value
-                            ? 'bg-brand-500 text-white shadow-md'
-                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                            ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg'
+                            : 'bg-white text-slate-600 hover:bg-primary-50 hover:text-primary-700 border border-primary-200'
                         }`}
                       >
                         {option.label}
@@ -1067,25 +1078,25 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
 
               {/* KPI Cards */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-                  <p className="text-slate-600 mb-2">Class Average</p>
-                  <p className="text-slate-900">{classAverage}%</p>
-                  <div className="mt-4 bg-slate-100 rounded-full h-2 overflow-hidden">
-                    <div className="bg-brand-500 h-full rounded-full" style={{ width: `${classAverage}%` }}></div>
+                <div className="glass-card p-6">
+                  <p className="text-slate-500 mb-2 text-sm">Class Average</p>
+                  <p className="text-3xl font-bold text-primary-700">{classAverage}%</p>
+                  <div className="mt-4 bg-primary-100 rounded-full h-2 overflow-hidden">
+                    <div className="bg-gradient-to-r from-primary-500 to-accent-500 h-full rounded-full" style={{ width: `${classAverage}%` }}></div>
                   </div>
                 </div>
 
-                <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-                  <p className="text-slate-600 mb-2">Avg Engagement</p>
-                  <p className="text-slate-900">{avgEngagement}%</p>
-                  <div className="mt-4 bg-slate-100 rounded-full h-2 overflow-hidden">
-                    <div className="bg-green-500 h-full rounded-full" style={{ width: `${avgEngagement}%` }}></div>
+                <div className="glass-card p-6">
+                  <p className="text-slate-500 mb-2 text-sm">Avg Engagement</p>
+                  <p className="text-3xl font-bold text-emerald-600">{avgEngagement}%</p>
+                  <div className="mt-4 bg-emerald-100 rounded-full h-2 overflow-hidden">
+                    <div className="bg-gradient-to-r from-green-500 to-emerald-400 h-full rounded-full" style={{ width: `${avgEngagement}%` }}></div>
                   </div>
                 </div>
 
-                <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-                  <p className="text-slate-600 mb-2">Students at Risk</p>
-                  <p className="text-risk-high">{studentsAtRisk}</p>
+                <div className="glass-card p-6">
+                  <p className="text-slate-500 mb-2 text-sm">Students at Risk</p>
+                  <p className="text-3xl font-bold text-accent-600">{studentsAtRisk}</p>
                   <p className="text-sm text-slate-500 mt-2">Require immediate attention</p>
                 </div>
               </div>
@@ -1093,8 +1104,8 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
               {/* Charts */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Pie Chart - Risk Distribution */}
-                <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-                  <h3 className="text-slate-900 mb-4">Risk Distribution</h3>
+                <div className="glass-card p-6">
+                  <h3 className="text-slate-800 font-semibold mb-4">Risk Distribution</h3>
                   <ResponsiveContainer width="100%" height={300}>
                     <PieChart>
                       <Pie
@@ -1109,36 +1120,41 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
                       >
                         {riskDistribution.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip />
+                        ))}n                      </Pie>
+                      <Tooltip contentStyle={{ backgroundColor: '#FFFFFF', border: '1px solid rgba(2,89,221,0.15)', borderRadius: '12px', color: '#334155' }} />
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
 
                 {/* Bar Chart - Weak Topics */}
-                <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-                  <h3 className="text-slate-900 mb-4">Most Challenging Topics</h3>
+                <div className="glass-card p-6">
+                  <h3 className="text-slate-800 font-semibold mb-4">Most Challenging Topics</h3>
                   <ResponsiveContainer width="100%" height={300}>
                     <BarChart data={weakTopicsData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="topic" />
-                      <YAxis />
-                      <Tooltip />
-                      <Bar dataKey="students" fill="#0ea5e9" />
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(2,89,221,0.1)" />
+                      <XAxis dataKey="topic" stroke="#64748B" />
+                      <YAxis stroke="#64748B" />
+                      <Tooltip contentStyle={{ backgroundColor: '#FFFFFF', border: '1px solid rgba(2,89,221,0.15)', borderRadius: '12px', color: '#334155' }} />
+                      <Bar dataKey="students" fill="url(#purpleGradient)" radius={[4, 4, 0, 0]} />
+                      <defs>
+                        <linearGradient id="purpleGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#A855F7" />
+                          <stop offset="100%" stopColor="#7C3AED" />
+                        </linearGradient>
+                      </defs>
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
               </div>
 
               {/* Detailed Student Table */}
-              <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <div className="p-6 border-b border-slate-200">
-                  <h3 className="text-slate-900">Detailed Student Performance</h3>
+              <div className="glass-card overflow-hidden">
+                <div className="p-6 border-b border-primary-100">
+                  <h3 className="text-slate-800 font-semibold">Detailed Student Performance</h3>
                 </div>
                 <div className="overflow-x-auto">
                   <table className="w-full">
-                    <thead className="bg-slate-50">
+                    <thead className="bg-primary-50/50">
                       <tr>
                         <th className="px-6 py-3 text-left text-xs text-slate-600 uppercase tracking-wider">Student</th>
                         <th className="px-6 py-3 text-left text-xs text-slate-600 uppercase tracking-wider">Risk Level</th>
@@ -1147,22 +1163,22 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
                         <th className="px-6 py-3 text-left text-xs text-slate-600 uppercase tracking-wider">Weakest Topic</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-200">
+                    <tbody className="divide-y divide-primary-100">
                       {students.map((student) => (
-                        <tr key={student.id} className="hover:bg-slate-50 cursor-pointer" onClick={() => { setActiveTab('dashboard'); setSelectedStudent(student); }}>
+                        <tr key={student.id} className="hover:bg-primary-50/50 cursor-pointer transition-colors" onClick={() => { setActiveTab('dashboard'); setSelectedStudent(student); }}>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center gap-3">
-                              <img src={student.avatar} alt={student.name} className="w-8 h-8 rounded-full" />
-                              <span className="text-sm text-slate-900">{student.name}</span>
+                              <img src={student.avatar} alt={student.name} className="w-8 h-8 rounded-full ring-2 ring-primary-100" />
+                              <span className="text-sm text-slate-800">{student.name}</span>
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <span className="px-2 py-1 text-xs text-white rounded-full" style={{ backgroundColor: getRiskColor(student.riskLevel) }}>
+                            <span className="px-2 py-1 text-xs text-white rounded-full font-medium" style={{ backgroundColor: getRiskColor(student.riskLevel) }}>
                               {student.riskLevel}
                             </span>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">{student.avgQuizScore}%</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">{student.engagementScore}%</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-700">{student.avgQuizScore}%</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-700">{student.engagementScore}%</td>
                           <td className="px-6 py-4 text-sm text-slate-600">{student.weakestTopic}</td>
                         </tr>
                       ))}
@@ -1176,16 +1192,16 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
           {activeTab === 'import' && (
             <div className="max-w-4xl mx-auto space-y-6">
               <div>
-                <h2 className="text-slate-900 mb-2">Import Data</h2>
+                <h2 className="text-slate-800 font-semibold text-xl mb-2">Import Data</h2>
                 <p className="text-slate-600">Upload class records and course materials to enhance AI predictions</p>
               </div>
 
               {/* Upload Result Banner */}
               {uploadResult && (
-                <div className={`rounded-xl p-4 flex items-start gap-3 ${
-                  uploadResult.type === 'success' ? 'bg-emerald-50 border border-emerald-200' :
-                  uploadResult.type === 'warning' ? 'bg-amber-50 border border-amber-200' :
-                  'bg-red-50 border border-red-200'
+                <div className={`rounded-xl p-4 flex items-start gap-3 border ${
+                  uploadResult.type === 'success' ? 'bg-emerald-500/10 border-emerald-500/30' :
+                  uploadResult.type === 'warning' ? 'bg-amber-500/10 border-amber-500/30' :
+                  'bg-red-500/10 border-red-500/30'
                 }`}>
                   {uploadResult.type === 'success' ? (
                     <CheckCircle className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
@@ -1225,8 +1241,8 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Class Records Upload */}
                 <div 
-                  className={`bg-white rounded-xl p-8 shadow-sm border-2 border-dashed transition-colors cursor-pointer ${
-                    isUploadingRecords ? 'border-brand-400 bg-brand-50' : 'border-slate-300 hover:border-brand-500'
+                  className={`glass-card p-8 border-2 border-dashed transition-colors cursor-pointer ${
+                    isUploadingRecords ? 'border-primary-400 bg-primary-500/10' : 'border-primary-200 hover:border-primary-500/50'
                   }`}
                   onDragOver={handleDragOver}
                   onDrop={handleDropRecords}
@@ -1240,25 +1256,25 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
                     onChange={handleClassRecordsUpload}
                   />
                   <div className="flex flex-col items-center">
-                    <div className={`p-4 rounded-full mb-4 ${isUploadingRecords ? 'bg-brand-200' : 'bg-brand-100'}`}>
+                    <div className={`p-4 rounded-full mb-4 ${isUploadingRecords ? 'bg-primary-500/20' : 'bg-primary-500/10'}`}>
                       {isUploadingRecords ? (
-                        <Loader2 className="w-8 h-8 text-brand-600 animate-spin" />
+                        <Loader2 className="w-8 h-8 text-primary-400 animate-spin" />
                       ) : (
-                        <FileSpreadsheet className="w-8 h-8 text-brand-600" />
+                        <FileSpreadsheet className="w-8 h-8 text-primary-400" />
                       )}
                     </div>
-                    <h3 className="text-slate-900 mb-2">Class Records</h3>
-                    <p className="text-sm text-slate-500 text-center mb-4">
+                    <h3 className="text-slate-800 mb-2">Class Records</h3>
+                    <p className="text-sm text-slate-600 text-center mb-4">
                       Upload student grades, attendance, and quiz scores
                     </p>
                     <div className="flex flex-wrap justify-center gap-1 mb-3">
                       {['.csv', '.xlsx', '.pdf'].map(ext => (
-                        <span key={ext} className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-xs">
+                        <span key={ext} className="px-2 py-0.5 bg-primary-100 text-primary-700 rounded text-xs">
                           {ext}
                         </span>
                       ))}
                     </div>
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-slate-500">
                       {isUploadingRecords ? 'Processing...' : 'Click or drag & drop'}
                     </p>
                   </div>
@@ -1266,8 +1282,8 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
 
                 {/* Course Materials Upload */}
                 <div 
-                  className={`bg-white rounded-xl p-8 shadow-sm border-2 border-dashed transition-colors cursor-pointer ${
-                    isUploadingMaterials ? 'border-amber-400 bg-amber-50' : 'border-slate-300 hover:border-amber-500'
+                  className={`glass-card p-8 border-2 border-dashed transition-colors cursor-pointer ${
+                    isUploadingMaterials ? 'border-accent-400 bg-accent-500/10' : 'border-accent-200 hover:border-accent-500/50'
                   }`}
                   onDragOver={handleDragOver}
                   onDrop={handleDropMaterials}
@@ -1281,25 +1297,25 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
                     onChange={handleCourseMaterialsUpload}
                   />
                   <div className="flex flex-col items-center">
-                    <div className={`p-4 rounded-full mb-4 ${isUploadingMaterials ? 'bg-amber-200' : 'bg-amber-100'}`}>
+                    <div className={`p-4 rounded-full mb-4 ${isUploadingMaterials ? 'bg-accent-500/20' : 'bg-accent-500/10'}`}>
                       {isUploadingMaterials ? (
-                        <Loader2 className="w-8 h-8 text-amber-600 animate-spin" />
+                        <Loader2 className="w-8 h-8 text-accent-400 animate-spin" />
                       ) : (
-                        <FileText className="w-8 h-8 text-amber-600" />
+                        <FileText className="w-8 h-8 text-accent-400" />
                       )}
                     </div>
-                    <h3 className="text-slate-900 mb-2">Course Materials</h3>
-                    <p className="text-sm text-slate-500 text-center mb-4">
+                    <h3 className="text-slate-800 mb-2">Course Materials</h3>
+                    <p className="text-sm text-slate-600 text-center mb-4">
                       Upload syllabus, lesson plans, and curriculum documents
                     </p>
                     <div className="flex flex-wrap justify-center gap-1 mb-3">
                       {['.pdf', '.docx', '.txt'].map(ext => (
-                        <span key={ext} className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-xs">
+                        <span key={ext} className="px-2 py-0.5 bg-accent-100 text-accent-700 rounded text-xs">
                           {ext}
                         </span>
                       ))}
                     </div>
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-slate-500">
                       {isUploadingMaterials ? 'Analyzing...' : 'Click or drag & drop'}
                     </p>
                   </div>
@@ -1308,24 +1324,24 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
 
               {/* Parsed Students Preview */}
               {parsedStudentsPreview && parsedStudentsPreview.length > 0 && (
-                <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-                  <h3 className="text-slate-900 mb-4 flex items-center gap-2">
+                <div className="glass-card p-6">
+                  <h3 className="text-slate-800 mb-4 flex items-center gap-2">
                     <CheckCircle className="w-5 h-5 text-emerald-500" />
                     Imported Students Preview
                   </h3>
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
-                      <thead className="bg-slate-50">
+                      <thead className="bg-primary-50/50">
                         <tr>
                           <th className="px-4 py-2 text-left text-slate-600">Name</th>
                           <th className="px-4 py-2 text-left text-slate-600">Quiz Avg</th>
                           <th className="px-4 py-2 text-left text-slate-600">Engagement</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-100">
+                      <tbody className="divide-y divide-primary-100">
                         {parsedStudentsPreview.map((student, i) => (
                           <tr key={i}>
-                            <td className="px-4 py-2 text-slate-900">{student.name}</td>
+                            <td className="px-4 py-2 text-slate-800">{student.name}</td>
                             <td className="px-4 py-2 text-slate-700">{Math.round(student.avgQuizScore)}%</td>
                             <td className="px-4 py-2 text-slate-700">{Math.round(student.engagementScore)}%</td>
                           </tr>
@@ -1341,9 +1357,9 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
 
               {/* Course Material Info */}
               {courseMaterialInfo && (
-                <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-                  <h3 className="text-slate-900 mb-4 flex items-center gap-2">
-                    <FileText className="w-5 h-5 text-amber-500" />
+                <div className="glass-card p-6">
+                  <h3 className="text-slate-800 mb-4 flex items-center gap-2">
+                    <FileText className="w-5 h-5 text-accent-500" />
                     Course Material Analysis: {courseMaterialInfo.filename}
                   </h3>
                   {courseMaterialInfo.topics.length > 0 && (
@@ -1351,7 +1367,7 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
                       <p className="text-sm text-slate-600 mb-2">Detected Math Topics:</p>
                       <div className="flex flex-wrap gap-2">
                         {courseMaterialInfo.topics.map((topic, i) => (
-                          <span key={i} className="px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-sm capitalize">
+                          <span key={i} className="px-3 py-1 bg-accent-100 text-accent-700 rounded-full text-sm capitalize">
                             {topic}
                           </span>
                         ))}
@@ -1359,7 +1375,7 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
                     </div>
                   )}
                   {courseMaterialInfo.hasAssessments && (
-                    <p className="text-sm text-emerald-600 flex items-center gap-1">
+                    <p className="text-sm text-emerald-400 flex items-center gap-1">
                       <CheckCircle className="w-4 h-4" /> Contains assessment/quiz information
                     </p>
                   )}
@@ -1367,10 +1383,10 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
               )}
 
               {/* Info Box */}
-              <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
-                <h4 className="text-blue-900 mb-2">How AI Uses Your Data</h4>
-                <ul className="space-y-2 text-sm text-blue-800">
-                  <li>• <strong>Smart Format Detection:</strong> AI understands various spreadsheet formats and column names</li>
+              <div className="bg-accent-50 border border-accent-200 rounded-xl p-6">
+                <h4 className="text-accent-700 mb-2">How AI Uses Your Data</h4>
+                <ul className="space-y-2 text-sm text-slate-700">
+                  <li>• <strong className="text-slate-800">Smart Format Detection:</strong> AI understands various spreadsheet formats and column names</li>
                   <li>• Analyzes historical performance patterns to predict at-risk students</li>
                   <li>• Maps curriculum topics to student knowledge gaps</li>
                   <li>• Generates personalized remedial learning paths</li>
@@ -1379,11 +1395,11 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
               </div>
 
               {/* Edit Class Records Button */}
-              <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-                <h3 className="text-slate-900 mb-4">Manage Imported Data</h3>
+              <div className="glass-card p-6">
+                <h3 className="text-slate-800 mb-4">Manage Imported Data</h3>
                 <button 
                   onClick={() => setIsEditClassRecordsModalOpen(true)}
-                  className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl p-6 hover:from-emerald-600 hover:to-emerald-700 transition-all text-left group shadow-md hover:shadow-lg"
+                  className="w-full bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-xl p-6 hover:from-primary-500 hover:to-primary-600 transition-all text-left group shadow-md hover:shadow-lg"
                 >
                   <div className="flex items-center gap-4">
                     <div className="bg-white/20 p-3 rounded-lg">

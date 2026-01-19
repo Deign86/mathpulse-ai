@@ -9,6 +9,37 @@
       "type": "stdio",
       "command": "npx",
       "args": ["-y", "@niyogi/render-mcp", "start"]
+    },
+    "shadcn-ui": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "shadcn-ui-mcp-server"]
+    },
+    "tailwind-mcp": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "tailwindcss-mcp-server"]
+    },
+    "serena": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "--from",
+        "git+https://github.com/oraios/serena",
+        "serena",
+        "start-mcp-server"
+      ]
+    },
+    "@21st-dev/magic": {
+      "type": "stdio",
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "@21st-dev/magic@latest",
+        "API_KEY=\"ff51839226e0d22cf74ca60f431187b6fa2225dd644526db3a0da970e7b534fd\""
+      ]
     }
   }
 }

@@ -144,10 +144,10 @@ export function SystemAnalytics() {
 
   const getColorClass = (color: string) => {
     const colors: Record<string, string> = {
-      blue: 'bg-blue-100 text-blue-600',
-      green: 'bg-green-100 text-green-600',
-      purple: 'bg-purple-100 text-purple-600',
-      red: 'bg-red-100 text-red-600'
+      blue: 'bg-primary-100 text-primary-600 border border-primary-200',
+      green: 'bg-emerald-100 text-emerald-600 border border-emerald-200',
+      purple: 'bg-secondary-100 text-secondary-600 border border-secondary-200',
+      red: 'bg-red-100 text-red-600 border border-red-200'
     };
     return colors[color] || colors.blue;
   };
@@ -157,21 +157,21 @@ export function SystemAnalytics() {
       {/* Header with Filters */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h3 className="text-lg font-semibold text-slate-900">System Analytics</h3>
+          <h3 className="text-lg font-semibold text-slate-800">System Analytics</h3>
           <p className="text-sm text-slate-500">Comprehensive learning platform insights</p>
         </div>
         <div className="flex gap-3">
           <select
             value={dateRange}
             onChange={(e) => setDateRange(e.target.value)}
-            className="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="px-3 py-2 bg-white border border-primary-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-500"
           >
             <option value="7d">Last 7 days</option>
             <option value="30d">Last 30 days</option>
             <option value="90d">Last 90 days</option>
             <option value="1y">Last year</option>
           </select>
-          <button className="flex items-center gap-2 px-4 py-2 border border-slate-300 rounded-lg text-sm text-slate-700 hover:bg-slate-50 transition-colors">
+          <button className="flex items-center gap-2 px-4 py-2 border border-primary-200 rounded-xl text-sm text-slate-600 hover:bg-primary-50 transition-colors cursor-pointer">
             <Download className="w-4 h-4" />
             Export Report
           </button>
@@ -181,19 +181,19 @@ export function SystemAnalytics() {
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat) => (
-          <div key={stat.title} className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+          <div key={stat.title} className="glass-card p-6">
             <div className="flex items-center justify-between mb-4">
-              <div className={`p-3 rounded-lg ${getColorClass(stat.color)}`}>
+              <div className={`p-3 rounded-xl ${getColorClass(stat.color)}`}>
                 <stat.icon className="w-6 h-6" />
               </div>
               <span className={`flex items-center gap-1 text-sm font-medium ${
-                stat.trend === 'up' ? 'text-green-600' : 'text-red-600'
+                stat.trend === 'up' ? 'text-emerald-600' : 'text-red-600'
               }`}>
                 {stat.trend === 'up' ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
                 {stat.change}
               </span>
             </div>
-            <p className="text-2xl font-bold text-slate-900">{stat.value}</p>
+            <p className="text-2xl font-bold text-slate-800">{stat.value}</p>
             <p className="text-sm text-slate-500">{stat.title}</p>
           </div>
         ))}
@@ -202,10 +202,10 @@ export function SystemAnalytics() {
       {/* Main Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Engagement Trend */}
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+        <div className="glass-card p-6">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h4 className="font-semibold text-slate-900">Engagement Trend</h4>
+              <h4 className="font-semibold text-slate-800">Engagement Trend</h4>
               <p className="text-sm text-slate-500">Daily active users and engagement rate</p>
             </div>
             <div className="flex gap-2">
@@ -213,10 +213,10 @@ export function SystemAnalytics() {
                 <button
                   key={metric}
                   onClick={() => setSelectedMetric(metric)}
-                  className={`px-3 py-1 text-xs rounded-full transition-colors ${
+                  className={`px-3 py-1 text-xs rounded-full transition-colors cursor-pointer ${
                     selectedMetric === metric
-                      ? 'bg-brand-500 text-white'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white'
+                      : 'bg-primary-100 text-slate-600 hover:bg-primary-200'
                   }`}
                 >
                   {metric.charAt(0).toUpperCase() + metric.slice(1)}
@@ -226,23 +226,23 @@ export function SystemAnalytics() {
           </div>
           <ResponsiveContainer width="100%" height={280}>
             <AreaChart data={engagementData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(2,89,221,0.1)" />
               <XAxis dataKey="date" stroke="#64748b" fontSize={12} />
               <YAxis stroke="#64748b" fontSize={12} />
-              <Tooltip />
+              <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid rgba(2,89,221,0.15)', borderRadius: '12px', color: '#0F172A', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
               <Area 
                 type="monotone" 
                 dataKey="activeUsers" 
-                stroke="#0ea5e9" 
-                fill="#0ea5e9" 
+                stroke="#0259DD" 
+                fill="#0259DD" 
                 fillOpacity={0.2}
                 name="Active Users" 
               />
               <Area 
                 type="monotone" 
                 dataKey="engagement" 
-                stroke="#8b5cf6" 
-                fill="#8b5cf6" 
+                stroke="#FF6648" 
+                fill="#FF6648" 
                 fillOpacity={0.2}
                 name="Engagement %" 
               />
@@ -251,9 +251,9 @@ export function SystemAnalytics() {
         </div>
 
         {/* Risk Distribution */}
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+        <div className="glass-card p-6">
           <div className="mb-4">
-            <h4 className="font-semibold text-slate-900">Student Risk Distribution</h4>
+            <h4 className="font-semibold text-slate-800">Student Risk Distribution</h4>
             <p className="text-sm text-slate-500">AI-predicted risk levels across all students</p>
           </div>
           <div className="flex items-center">
@@ -272,7 +272,7 @@ export function SystemAnalytics() {
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip />
+                <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid rgba(2,89,221,0.15)', borderRadius: '12px', color: '#0F172A', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
               </PieChart>
             </ResponsiveContainer>
             <div className="flex-1 space-y-4">
@@ -282,12 +282,12 @@ export function SystemAnalytics() {
                     <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }}></div>
                     <span className="text-sm text-slate-600">{item.name}</span>
                   </div>
-                  <span className="font-semibold text-slate-900">{item.value}</span>
+                  <span className="font-semibold text-slate-800">{item.value}</span>
                 </div>
               ))}
-              <div className="pt-4 border-t border-slate-200">
+              <div className="pt-4 border-t border-primary-100">
                 <p className="text-sm text-slate-500">Total Students</p>
-                <p className="text-xl font-bold text-slate-900">{students.length}</p>
+                <p className="text-xl font-bold text-slate-800">{students.length}</p>
               </div>
             </div>
           </div>
@@ -297,35 +297,35 @@ export function SystemAnalytics() {
       {/* Second Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Topic Performance */}
-        <div className="lg:col-span-2 bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+        <div className="lg:col-span-2 glass-card p-6">
           <div className="mb-4">
-            <h4 className="font-semibold text-slate-900">Topic Performance</h4>
+            <h4 className="font-semibold text-slate-800">Topic Performance</h4>
             <p className="text-sm text-slate-500">Average quiz scores by math topic</p>
           </div>
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={topicPerformance} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(2,89,221,0.1)" />
               <XAxis type="number" domain={[0, 100]} stroke="#64748b" fontSize={12} />
               <YAxis dataKey="topic" type="category" stroke="#64748b" fontSize={12} width={100} />
-              <Tooltip />
-              <Bar dataKey="avgScore" fill="#0ea5e9" radius={[0, 4, 4, 0]} name="Avg Score %" />
+              <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid rgba(2,89,221,0.15)', borderRadius: '12px', color: '#0F172A', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
+              <Bar dataKey="avgScore" fill="#0259DD" radius={[0, 4, 4, 0]} name="Avg Score %" />
             </BarChart>
           </ResponsiveContainer>
         </div>
 
         {/* Hourly Activity */}
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+        <div className="glass-card p-6">
           <div className="mb-4">
-            <h4 className="font-semibold text-slate-900">Hourly Activity</h4>
+            <h4 className="font-semibold text-slate-800">Hourly Activity</h4>
             <p className="text-sm text-slate-500">Peak usage times today</p>
           </div>
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={hourlyActivity}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(2,89,221,0.1)" />
               <XAxis dataKey="hour" stroke="#64748b" fontSize={10} />
               <YAxis stroke="#64748b" fontSize={12} />
-              <Tooltip />
-              <Bar dataKey="users" fill="#8b5cf6" radius={[4, 4, 0, 0]} name="Active Users" />
+              <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid rgba(2,89,221,0.15)', borderRadius: '12px', color: '#0F172A', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
+              <Bar dataKey="users" fill="#FF6648" radius={[4, 4, 0, 0]} name="Active Users" />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -334,9 +334,9 @@ export function SystemAnalytics() {
       {/* Module Completion & Teacher Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Module Completion */}
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+        <div className="glass-card p-6">
           <div className="mb-4">
-            <h4 className="font-semibold text-slate-900">Module Completion</h4>
+            <h4 className="font-semibold text-slate-800">Module Completion</h4>
             <p className="text-sm text-slate-500">Completion rates by module type</p>
           </div>
           <div className="space-y-4">
@@ -348,7 +348,7 @@ export function SystemAnalytics() {
                     <span className="text-sm font-medium text-slate-700">{module.name}</span>
                     <span className="text-sm text-slate-500">{module.completed}/{module.total} ({percentage}%)</span>
                   </div>
-                  <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
+                  <div className="h-3 bg-primary-100 rounded-full overflow-hidden">
                     <div 
                       className="h-full rounded-full transition-all"
                       style={{ width: `${percentage}%`, backgroundColor: module.color }}
@@ -358,14 +358,14 @@ export function SystemAnalytics() {
               );
             })}
           </div>
-          <div className="mt-6 pt-4 border-t border-slate-200">
+          <div className="mt-6 pt-4 border-t border-primary-100">
             <div className="flex items-center justify-between">
               <span className="text-sm text-slate-500">Total Modules</span>
-              <span className="font-semibold text-slate-900">{mockModuleTemplates.length}</span>
+              <span className="font-semibold text-slate-800">{mockModuleTemplates.length}</span>
             </div>
             <div className="flex items-center justify-between mt-2">
               <span className="text-sm text-slate-500">Published</span>
-              <span className="font-semibold text-green-600">
+              <span className="font-semibold text-emerald-600">
                 {mockModuleTemplates.filter(m => m.status === 'published').length}
               </span>
             </div>
@@ -373,39 +373,39 @@ export function SystemAnalytics() {
         </div>
 
         {/* Teacher Activity */}
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+        <div className="glass-card p-6">
           <div className="mb-4">
-            <h4 className="font-semibold text-slate-900">Teacher Activity</h4>
+            <h4 className="font-semibold text-slate-800">Teacher Activity</h4>
             <p className="text-sm text-slate-500">Content creation and student management</p>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-slate-200">
+                <tr className="border-b border-primary-100">
                   <th className="text-left text-xs font-medium text-slate-500 uppercase pb-3">Teacher</th>
                   <th className="text-center text-xs font-medium text-slate-500 uppercase pb-3">Students</th>
                   <th className="text-center text-xs font-medium text-slate-500 uppercase pb-3">Modules</th>
                   <th className="text-center text-xs font-medium text-slate-500 uppercase pb-3">Links</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-primary-50">
                 {teacherActivity.map((teacher) => (
                   <tr key={teacher.name}>
                     <td className="py-3">
-                      <span className="text-sm font-medium text-slate-900">{teacher.name}</span>
+                      <span className="text-sm font-medium text-slate-800">{teacher.name}</span>
                     </td>
                     <td className="py-3 text-center">
-                      <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-600 text-sm font-medium">
+                      <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary-100 text-primary-600 text-sm font-medium border border-primary-200">
                         {teacher.studentsManaged}
                       </span>
                     </td>
                     <td className="py-3 text-center">
-                      <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-purple-100 text-purple-600 text-sm font-medium">
+                      <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-secondary-100 text-secondary-600 text-sm font-medium border border-secondary-200">
                         {teacher.modulesCreated}
                       </span>
                     </td>
                     <td className="py-3 text-center">
-                      <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-green-100 text-green-600 text-sm font-medium">
+                      <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 text-sm font-medium border border-emerald-200">
                         {teacher.linksApproved}
                       </span>
                     </td>
@@ -418,24 +418,25 @@ export function SystemAnalytics() {
       </div>
 
       {/* AI Insights Card */}
-      <div className="bg-gradient-to-r from-brand-500 to-brand-600 rounded-xl p-6 text-white">
-        <div className="flex items-start gap-4">
-          <div className="bg-white/20 p-3 rounded-lg">
+      <div className="relative overflow-hidden bg-gradient-to-r from-primary-600 via-primary-700 to-accent-600 rounded-xl p-6 text-white border border-primary-500/30">
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:32px_32px]"></div>
+        <div className="relative flex items-start gap-4">
+          <div className="bg-white/20 p-3 rounded-xl backdrop-blur-sm">
             <Target className="w-6 h-6" />
           </div>
           <div className="flex-1">
             <h4 className="text-lg font-semibold mb-2">AI Analytics Summary</h4>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-white/10 rounded-lg p-4">
-                <p className="text-white/80 text-sm">Key Insight</p>
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/10">
+                <p className="text-white/70 text-sm">Key Insight</p>
                 <p className="font-medium mt-1">Students struggling with Trigonometry show 25% lower engagement</p>
               </div>
-              <div className="bg-white/10 rounded-lg p-4">
-                <p className="text-white/80 text-sm">Recommendation</p>
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/10">
+                <p className="text-white/70 text-sm">Recommendation</p>
                 <p className="font-medium mt-1">Add more visual content for Unit Circle topics</p>
               </div>
-              <div className="bg-white/10 rounded-lg p-4">
-                <p className="text-white/80 text-sm">Prediction</p>
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/10">
+                <p className="text-white/70 text-sm">Prediction</p>
                 <p className="font-medium mt-1">3 students likely to improve risk level this week</p>
               </div>
             </div>
