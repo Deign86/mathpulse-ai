@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Save, Plus, Trash2, AlertCircle, CheckCircle, Edit2 } from 'lucide-react';
 import { Student, RiskLevel } from '../types';
+import { ConfirmDialog } from './ui/ConfirmDialog';
 
 interface EditClassRecordsModalProps {
   isOpen: boolean;
@@ -13,6 +14,17 @@ export function EditClassRecordsModal({ isOpen, onClose, students, onSaveChanges
   const [editedStudents, setEditedStudents] = useState<Student[]>(students);
   const [hasChanges, setHasChanges] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [closeConfirmOpen, setCloseConfirmOpen] = useState(false);
+  const [studentToDelete, setStudentToDelete] = useState<string | null>(null);
+
+  // Sync editedStudents when students prop changes or modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setEditedStudents(students);
+      setHasChanges(false);
+    }
+  }, [students, isOpen]);
 
   if (!isOpen) return null;
 
@@ -26,9 +38,15 @@ export function EditClassRecordsModal({ isOpen, onClose, students, onSaveChanges
   };
 
   const handleDeleteStudent = (studentId: string) => {
-    if (confirm('Are you sure you want to remove this student from the records?')) {
-      setEditedStudents(prev => prev.filter(s => s.id !== studentId));
+    setStudentToDelete(studentId);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDeleteStudent = () => {
+    if (studentToDelete) {
+      setEditedStudents(prev => prev.filter(s => s.id !== studentToDelete));
       setHasChanges(true);
+      setStudentToDelete(null);
     }
   };
 
@@ -59,18 +77,42 @@ export function EditClassRecordsModal({ isOpen, onClose, students, onSaveChanges
 
   const handleCancel = () => {
     if (hasChanges) {
-      if (confirm('You have unsaved changes. Are you sure you want to close?')) {
-        setEditedStudents(students);
-        setHasChanges(false);
-        onClose();
-      }
+      setCloseConfirmOpen(true);
     } else {
       onClose();
     }
   };
 
+  const confirmClose = () => {
+    setEditedStudents(students);
+    setHasChanges(false);
+    onClose();
+  };
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        open={deleteConfirmOpen}
+        onOpenChange={setDeleteConfirmOpen}
+        title="Remove Student"
+        description="Are you sure you want to remove this student from the records? This action can be undone by canceling without saving."
+        confirmText="Remove"
+        variant="destructive"
+        onConfirm={confirmDeleteStudent}
+      />
+
+      {/* Close Confirmation Dialog */}
+      <ConfirmDialog
+        open={closeConfirmOpen}
+        onOpenChange={setCloseConfirmOpen}
+        title="Unsaved Changes"
+        description="You have unsaved changes. Are you sure you want to close? Your changes will be lost."
+        confirmText="Discard Changes"
+        variant="destructive"
+        onConfirm={confirmClose}
+      />
+
       <div className="bg-white rounded-2xl max-w-7xl w-full max-h-[90vh] flex flex-col shadow-2xl">
         {/* Header */}
         <div className="bg-gradient-to-r from-brand-500 to-brand-900 p-6 rounded-t-2xl flex items-center justify-between">

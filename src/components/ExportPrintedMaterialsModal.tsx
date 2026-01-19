@@ -2,6 +2,7 @@ import { X, Printer, Download, FileText, CheckSquare, BookOpen, Loader2 } from '
 import { useState } from 'react';
 import { Student } from '../types';
 import { pdfGenerator } from '../services/pdfGenerator';
+import { useToast } from './ui/Toast';
 
 interface ExportPrintedMaterialsModalProps {
   isOpen: boolean;
@@ -14,6 +15,7 @@ export function ExportPrintedMaterialsModal({ isOpen, onClose, students = [], se
   const [selectedMaterials, setSelectedMaterials] = useState<string[]>([]);
   const [format, setFormat] = useState<'pdf' | 'docx'>('pdf');
   const [isExporting, setIsExporting] = useState(false);
+  const toast = useToast();
 
   if (!isOpen) return null;
 
@@ -117,7 +119,7 @@ export function ExportPrintedMaterialsModal({ isOpen, onClose, students = [], se
       onClose();
     } catch (error) {
       console.error('Export error:', error);
-      alert('Failed to export materials. Please try again.');
+      toast.error('Export Failed', 'Failed to export materials. Please try again.');
     } finally {
       setIsExporting(false);
     }

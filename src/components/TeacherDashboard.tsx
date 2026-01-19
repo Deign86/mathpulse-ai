@@ -11,6 +11,7 @@ import { ClassroomOverviewModal } from './ClassroomOverviewModal';
 import { EditClassRecordsModal } from './EditClassRecordsModal';
 import { apiService } from '../services/api';
 import { studentService, activityService, announcementService, Announcement } from '../services/firebase';
+import { useToast } from './ui/Toast';
 
 const getRiskColor = (risk: RiskLevel) => {
   switch (risk) {
@@ -49,6 +50,8 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
   const [announcementType, setAnnouncementType] = useState<'info' | 'warning' | 'success' | 'urgent'>('info');
   const [announcementTarget, setAnnouncementTarget] = useState<'all' | 'classroom'>('classroom');
   const [isSendingAnnouncement, setIsSendingAnnouncement] = useState(false);
+  
+  const toast = useToast();
 
   // Load students from Firebase on mount
   useEffect(() => {
@@ -139,10 +142,10 @@ export function TeacherDashboard({ onLogout, currentUser }: TeacherDashboardProp
       setAnnouncementType('info');
       setIsAnnouncementModalOpen(false);
       
-      alert('Announcement sent successfully!');
+      toast.success('Announcement Sent', 'Your announcement has been delivered successfully.');
     } catch (error) {
       console.error('Error sending announcement:', error);
-      alert('Failed to send announcement. Please try again.');
+      toast.error('Failed to Send', 'Could not send announcement. Please try again.');
     } finally {
       setIsSendingAnnouncement(false);
     }

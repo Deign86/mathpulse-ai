@@ -680,15 +680,6 @@ export function StudentView({ onLogout, currentUser }: StudentViewProps) {
           onClose={() => setIsRewardsOpen(false)}
         />
       )}
-      
-      {/* Module Content Modal */}
-      {viewingModuleContent && selectedModule && (
-        <ModuleContent
-          module={selectedModule}
-          onComplete={handleModuleComplete}
-          onBack={handleBackToModules}
-        />
-      )}
     </div>
   );
 }

@@ -26,6 +26,8 @@ import { SystemUser, UserRole, UserStatus } from '../../types';
 import { mockSystemUsers } from '../../utils/adminMockData';
 import { mockClassrooms } from '../../utils/mockData';
 import { adminUserService, UserProfile } from '../../services/firebase';
+import { ConfirmDialog } from '../ui/ConfirmDialog';
+import { useToast } from '../ui/Toast';
 
 export function UserManagement() {
   const [users, setUsers] = useState<SystemUser[]>([]);
@@ -38,6 +40,10 @@ export function UserManagement() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<string | null>(null);
+  
+  const toast = useToast();
 
   // Load users from Firebase on mount
   useEffect(() => {
@@ -57,6 +63,7 @@ export function UserManagement() {
             department: u.department,
             gradeLevel: u.gradeLevel,
             classroomId: u.classroomId,
+            lastLogin: (u as any).lastLogin ? ((u as any).lastLogin instanceof Date ? (u as any).lastLogin.toISOString() : String((u as any).lastLogin)) : undefined,
             createdAt: u.createdAt instanceof Date ? u.createdAt.toISOString() : String(u.createdAt)
           }));
           setUsers(systemUsers);
@@ -164,15 +171,21 @@ export function UserManagement() {
   };
 
   const handleDeleteUser = async (userId: string) => {
-    if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
-      try {
-        await adminUserService.deleteUser(userId);
-        setUsers(prev => prev.filter(u => u.id !== userId));
-      } catch (error) {
-        console.error('Error deleting user:', error);
-        alert('Failed to delete user. Please try again.');
-      }
+    setUserToDelete(userId);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDeleteUser = async () => {
+    if (!userToDelete) return;
+    try {
+      await adminUserService.deleteUser(userToDelete);
+      setUsers(prev => prev.filter(u => u.id !== userToDelete));
+      toast.success('User Deleted', 'The user has been removed successfully.');
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      toast.error('Delete Failed', 'Failed to delete user. Please try again.');
     }
+    setUserToDelete(null);
   };
 
   const handleToggleStatus = async (userId: string, currentStatus: UserStatus) => {
@@ -182,9 +195,10 @@ export function UserManagement() {
       setUsers(prev => prev.map(u => 
         u.id === userId ? { ...u, status: newStatus, updatedAt: new Date().toISOString() } : u
       ));
+      toast.success('Status Updated', `User has been ${newStatus === 'active' ? 'activated' : 'suspended'}.`);
     } catch (error) {
       console.error('Error updating user status:', error);
-      alert('Failed to update user status. Please try again.');
+      toast.error('Update Failed', 'Failed to update user status. Please try again.');
     }
   };
 
@@ -235,7 +249,7 @@ export function UserManagement() {
       setSelectedUser(null);
     } catch (error) {
       console.error('Error saving user:', error);
-      alert('Failed to save user. Please try again.');
+      toast.error('Save Failed', 'Failed to save user. Please try again.');
     } finally {
       setIsSaving(false);
     }
@@ -251,6 +265,17 @@ export function UserManagement() {
 
   return (
     <div className="space-y-6">
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        open={deleteConfirmOpen}
+        onOpenChange={setDeleteConfirmOpen}
+        title="Delete User"
+        description="Are you sure you want to delete this user? This action cannot be undone."
+        confirmText="Delete"
+        variant="destructive"
+        onConfirm={confirmDeleteUser}
+      />
+
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <div className="bg-white rounded-lg p-4 shadow-sm border border-slate-200">

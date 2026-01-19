@@ -320,6 +320,13 @@ export const mockSystemSettings: SystemSettings = {
 /**
  * Mock System Statistics
  */
+// Generate a recent backup timestamp (3 AM today)
+const getLastBackupTime = () => {
+  const today = new Date();
+  today.setHours(3, 0, 0, 0);
+  return today.toISOString();
+};
+
 export const mockSystemStats: SystemStats = {
   totalUsers: 156,
   totalStudents: 148,
@@ -332,7 +339,7 @@ export const mockSystemStats: SystemStats = {
   averageEngagement: 72,
   studentsAtRisk: 12,
   systemUptime: '99.8%',
-  lastBackup: '2025-01-18T03:00:00'
+  lastBackup: getLastBackupTime()
 };
 
 /**
