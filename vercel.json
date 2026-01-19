@@ -4,5 +4,13 @@
   "framework": "vite",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
-  ]
+  ],
+  "git": {
+    "deploymentEnabled": {
+      "main": true,
+      "dev": true,
+      "feature/*": true,
+      "fix/*": true
+    }
+  }
 }
