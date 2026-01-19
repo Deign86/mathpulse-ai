@@ -46,7 +46,7 @@ class HuggingFaceService:
             print(f"❌ HuggingFace Exception: {str(e)}")
             return {"error": str(e)}
     
-    async def query_classification(self, model_id: str, text: str, labels: list) -> dict:
+    async def query_classification(self, model_id: str, text: str, labels: list):
         """Send a zero-shot classification request"""
         print(f"🔄 Calling HuggingFace Classification API: {model_id}")
         
@@ -577,17 +577,18 @@ class RiskPredictionService:
         
         result = await self.hf_service.query_classification(self.model_id, student_description, labels)
         
-        if "error" in result:
+        # Check if result is a dict with error key
+        if isinstance(result, dict) and "error" in result:
             # Fallback to rule-based prediction
             return self._rule_based_prediction(engagement, quiz_score, weakest_topic)
         
         # Parse classification result from huggingface_hub format
         try:
             # The result is a list of ClassificationOutputElement objects
-            if result and len(result) > 0:
+            if result and isinstance(result, list) and len(result) > 0:
                 top_result = result[0]
-                top_label = top_result.label if hasattr(top_result, 'label') else str(top_result)
-                confidence = top_result.score if hasattr(top_result, 'score') else 0.5
+                top_label = getattr(top_result, 'label', str(top_result))
+                confidence = getattr(top_result, 'score', 0.5)
                 
                 risk_level = "High" if "high" in top_label else "Medium" if "moderate" in top_label else "Low"
                 
