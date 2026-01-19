@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { LoginView } from './components/LoginView';
 import { TeacherDashboard } from './components/TeacherDashboard';
 import { StudentView } from './components/StudentView';
@@ -104,6 +105,7 @@ export default function App() {
   return (
     <ToastProvider>
       <AppContent />
+      <Analytics />
     </ToastProvider>
   );
 }
